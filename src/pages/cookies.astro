@@ -1,5 +1,17 @@
 ---
 import Legal from '@/layouts/Legal.astro';
+
+const conAnalitica = Boolean(import.meta.env.PUBLIC_GA4_ID);
 ---
 
-<Legal titulo="Política de cookies" descripcion="Política de cookies de estudioseijo.com." />
+<Legal id="cookies">
+  {conAnalitica ? (
+    <div>
+      <button type="button" class="btn btn-out btn-sm" data-abrir-cookies>
+        Preferencias de cookies
+      </button>
+    </div>
+  ) : (
+    <p class="small">Ahora mismo esta web no usa cookies de analítica: no hay nada que configurar.</p>
+  )}
+</Legal>

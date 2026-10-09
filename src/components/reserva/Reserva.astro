@@ -10,7 +10,7 @@
 import Etiqueta from '@/components/ui/Etiqueta.astro';
 import Icono from '@/components/ui/Icono.astro';
 import { modalidades } from '@/config/reservas';
-import { contacto } from '@/config/sitio';
+import { contacto, sitio } from '@/config/sitio';
 
 const agendaGoogle = import.meta.env.PUBLIC_GOOGLE_BOOKING_URL as string | undefined;
 // Cloudflare Turnstile (anti-spam). Sin clave, el servidor no lo exige (desarrollo y pruebas).
@@ -173,12 +173,31 @@ const DIAS_SEMANA = [
                 <input id="r-web" name="web" type="text" tabindex="-1" autocomplete="off" />
               </div>
               <label class="consent">
-                <input id="r-privacy" name="privacidad" type="checkbox" required />
+                <input
+                  id="r-privacy"
+                  name="privacidad"
+                  type="checkbox"
+                  required
+                  aria-describedby="info-privacidad"
+                />
                 <span>
                   Acepto la <a href="/privacidad">política de privacidad</a> y que Estudio Seijo me contacte
                   para esta reunión.
                 </span>
               </label>
+              {/* Primera capa de información (RGPD). PENDIENTE: revisar con la asesoría junto a la política de privacidad */}
+              <p class="small" id="info-privacidad" style="line-height:1.5">
+                <strong style="font-weight:500">Responsable:</strong> {sitio.nombre}.
+                <strong style="font-weight:500">Finalidad:</strong> organizar la reunión y responder a tu
+                consulta.
+                <strong style="font-weight:500">Legitimación:</strong> tu consentimiento.
+                <strong style="font-weight:500">Destinatarios:</strong> Google (calendario y
+                videoconferencia), como encargado del tratamiento.
+                <strong style="font-weight:500">Derechos:</strong> acceso, rectificación, supresión y otros,
+                en
+                {contacto.email.visible}. Más información en la{' '}
+                <a href="/privacidad">política de privacidad</a>.
+              </p>
               <div class="summary">
                 <Icono nombre="calendar" />
                 <span id="summary" aria-live="polite">

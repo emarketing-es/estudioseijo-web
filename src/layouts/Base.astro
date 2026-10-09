@@ -4,6 +4,7 @@
  * El SEO completo (Open Graph con imagen, schema.org, sitemap) se completa en la fase 6.
  */
 import '@/styles/global.css';
+import Analitica from '@/components/layout/Analitica.astro';
 import Cabecera from '@/components/layout/Cabecera.astro';
 import Pie from '@/components/layout/Pie.astro';
 import SpriteIconos from '@/components/ui/SpriteIconos.astro';
@@ -54,5 +55,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <Pie />
+    <Analitica />
   </body>
 </html>

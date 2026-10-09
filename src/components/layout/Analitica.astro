@@ -1,0 +1,95 @@
+---
+/**
+ * Google Analytics 4 con Google Consent Mode v2 (modo básico) y aviso de cookies.
+ * Solo se incluye si hay PUBLIC_GA4_ID. GA4 no se descarga ni guarda cookies hasta que el visitante acepta.
+ * Sin PUBLIC_GA4_ID la web no usa cookies no esenciales y no se muestra ningún aviso.
+ */
+const id = import.meta.env.PUBLIC_GA4_ID as string | undefined;
+---
+
+{id && (
+  <>
+    <script is:inline define:vars={{ id }}>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () {
+        window.dataLayer.push(arguments);
+      };
+      // Todo denegado por defecto (Consent Mode v2)
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+      });
+      gtag('js', new Date());
+      gtag('config', id);
+      window.__es_ga4 = id;
+    </script>
+    <div class="cookie-banner" id="aviso-cookies" role="region" aria-label="Aviso de cookies" hidden>
+      <p class="body" style="color:var(--g800)">
+        Usamos cookies de analítica (Google Analytics) para saber cómo se usa la web,{' '}
+        <strong>solo si las aceptas</strong>. Más información en la <a href="/cookies">política de cookies</a>
+        .
+      </p>
+      <div class="cookie-actions">
+        <button type="button" class="btn btn-dark btn-sm" data-cookies="aceptar">
+          Aceptar analítica
+        </button>
+        <button type="button" class="btn btn-out btn-sm" data-cookies="rechazar">
+          Rechazar
+        </button>
+      </div>
+    </div>
+  </>
+)}
+
+<script>
+  import { eventoDeEnlace, registrarEvento } from '@/lib/analitica';
+  import { guardarConsentimiento, leerConsentimiento } from '@/lib/consentimiento';
+
+  const id = (window as { __es_ga4?: string }).__es_ga4;
+  const aviso = document.getElementById('aviso-cookies');
+  let cargado = false;
+
+  function cargarGA4() {
+    if (!id || cargado) return;
+    cargado = true;
+    window.gtag?.('consent', 'update', { analytics_storage: 'granted' });
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+    document.head.appendChild(script);
+  }
+
+  if (id && aviso) {
+    const decision = leerConsentimiento(localStorage);
+    if (decision?.analitica) cargarGA4();
+    else if (!decision) aviso.hidden = false;
+
+    aviso.addEventListener('click', (e) => {
+      const accion = (e.target as HTMLElement).closest<HTMLElement>('[data-cookies]')?.dataset.cookies;
+      if (!accion) return;
+      const acepta = accion === 'aceptar';
+      guardarConsentimiento(localStorage, acepta);
+      aviso.hidden = true;
+      if (acepta) cargarGA4();
+      // Retirar el consentimiento: GA4 deja de medir; las cookies ya creadas se borran al recargar sin cargarlo
+      else if (cargado) window.gtag?.('consent', 'update', { analytics_storage: 'denied' });
+    });
+
+    // Botón «Preferencias de cookies» (página de cookies): vuelve a mostrar el aviso
+    document.querySelectorAll('[data-abrir-cookies]').forEach((b) =>
+      b.addEventListener('click', () => {
+        aviso.hidden = false;
+        aviso.querySelector<HTMLButtonElement>('[data-cookies="aceptar"]')?.focus();
+      }),
+    );
+  }
+
+  // Clics en teléfono y WhatsApp (solo llegan a GA4 si está cargado con consentimiento)
+  document.addEventListener('click', (e) => {
+    const enlace = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+    const evento = enlace && eventoDeEnlace(enlace);
+    if (evento) registrarEvento(evento);
+  });
+</script>

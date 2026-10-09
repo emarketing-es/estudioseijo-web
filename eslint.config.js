@@ -27,4 +27,9 @@ export default defineConfig(
       globals: { ...globals.browser, ...globals.node },
     },
   },
+  {
+    // gtag.js de Google necesita el objeto `arguments` (no admite parámetros rest)
+    files: ['src/components/layout/Analitica.astro', 'src/components/layout/Analitica.astro/**'],
+    rules: { 'prefer-rest-params': 'off' },
+  },
 );

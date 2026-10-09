@@ -1,30 +1,45 @@
 ---
 /**
- * Páginas legales (aviso legal, privacidad, cookies). Estructura de la maqueta.
- * PENDIENTE: los textos vigentes los aporta Estudio Seijo / asesoría (fase 5). Hasta entonces se muestra el aviso.
+ * Páginas legales (aviso legal, privacidad, cookies). Estructura de la maqueta; el texto sale de
+ * src/content/legal/*.md (editable también desde /admin). Mientras `pendiente` sea true, se avisa de que es
+ * una plantilla: los textos vigentes los aporta Estudio Seijo / asesoría.
  */
+import { getEntry, render } from 'astro:content';
 import { contacto } from '@/config/sitio';
 import Pagina from './Pagina.astro';
 
 interface Props {
-  titulo: string;
-  descripcion: string;
+  /** Nombre del archivo en src/content/legal (sin .md). */
+  id: 'aviso-legal' | 'privacidad' | 'cookies';
 }
 
-const { titulo, descripcion } = Astro.props;
-const tieneTexto = Astro.slots.has('default');
+const entrada = await getEntry('legal', Astro.props.id);
+if (!entrada) throw new Error(`Falta src/content/legal/${Astro.props.id}.md`);
+const { Content } = await render(entrada);
+const { titulo, descripcion, pendiente, actualizado } = entrada.data;
 ---
 
 <Pagina titulo={titulo} etiqueta="Información legal" descripcion={descripcion}>
   <section class="section" style="padding-top:48px">
     <div class="wrap">
-      <div class="card" style="max-width:760px;display:flex;flex-direction:column;gap:14px">
-        {tieneTexto ? (
-          <slot />
-        ) : (
-          <p class="body">
-            <strong>Pendiente:</strong> texto legal vigente de estudioseijo.com (titular, NIF, domicilio,
-            datos registrales y condiciones). Lo aporta Estudio Seijo.
+      <div class="card" style="max-width:760px;display:flex;flex-direction:column;gap:20px">
+        {pendiente && (
+          <div class="card pendiente" role="note">
+            <div class="label">Pendiente · texto legal</div>
+            <p class="body">
+              Plantilla provisional. Falta el texto vigente revisado por la asesoría y los datos del titular
+              (NIF y domicilio).
+            </p>
+          </div>
+        )}
+        <div class="prose" style="font-size:16px">
+          <Content />
+        </div>
+        <slot />
+        {actualizado && (
+          <p class="small">
+            Última actualización:{' '}
+            {new Intl.DateTimeFormat('es-ES', { dateStyle: 'long', timeZone: 'UTC' }).format(actualizado)}
           </p>
         )}
         <p class="small">

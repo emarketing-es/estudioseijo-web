@@ -182,3 +182,29 @@
   flex-wrap: wrap;
   gap: 20px;
 }
+
+/* Aviso de cookies (solo si GA4 está configurado) */
+.cookie-banner {
+  position: fixed;
+  z-index: 30;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--g200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cookie-actions .btn {
+  flex: 1 1 180px;
+}
