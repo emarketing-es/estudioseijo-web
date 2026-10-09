@@ -7,7 +7,15 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig(
   {
-    ignores: ['dist/', '.astro/', 'node_modules/', 'referencia/', 'playwright-report/', 'test-results/'],
+    ignores: [
+      'dist/',
+      '.astro/',
+      'node_modules/',
+      'referencia/',
+      'playwright-report/',
+      'test-results/',
+      'public/admin/cms/',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

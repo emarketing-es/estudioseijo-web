@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Gestor de contenidos · Estudio Seijo</title>
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  </head>
+  <body>
+    <!-- Decap CMS (servido desde nuestro dominio: scripts/copiar-decap.mjs). La configuración está en config.yml, en esta misma carpeta. -->
+    <script src="/admin/cms/decap-cms.js"></script>
+    <script>
+      // Vista previa de los artículos con los estilos de lectura del sitio: título, resumen y texto
+      CMS.registerPreviewStyle('/admin/vista-previa.css');
+      CMS.registerPreviewTemplate(
+        'blog',
+        createClass({
+          render: function () {
+            var datos = this.props.entry.get('data');
+            return h(
+              'article',
+              {},
+              h('p', { className: 'etiqueta' }, datos.get('categoria') || ''),
+              h('h1', {}, datos.get('titulo') || ''),
+              h('p', { className: 'entradilla' }, datos.get('resumen') || ''),
+              this.props.widgetFor('body'),
+            );
+          },
+        }),
+      );
+    </script>
+  </body>
+</html>
