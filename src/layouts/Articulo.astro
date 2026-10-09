@@ -1,0 +1,113 @@
+---
+/**
+ * Página de artículo del blog. La maqueta no la incluye: se ha diseñado con las piezas del sitio
+ * (cabecera de página, composición geométrica de la categoría, banda oscura de CTA y tarjetas).
+ */
+import TarjetaArticulo from '@/components/blog/TarjetaArticulo.astro';
+import Etiqueta from '@/components/ui/Etiqueta.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { categoriaPorNombre, formatoFecha } from '@/config/blog';
+import { minutosLectura, type Articulo } from '@/lib/blog';
+import Base from './Base.astro';
+
+interface Props {
+  articulo: Articulo;
+  relacionados: Articulo[];
+}
+
+const { articulo, relacionados } = Astro.props;
+const { titulo, resumen, fecha, categoria, autor, imagen, imagenAlt } = articulo.data;
+const cat = categoriaPorNombre(categoria)!;
+const minutos = minutosLectura(articulo);
+const fechaISO = fecha.toISOString().slice(0, 10);
+---
+
+<Base titulo={titulo} descripcion={resumen}>
+  <article>
+    <header class="page-hero">
+      <div class="wrap">
+        <div class="copy">
+          <nav class="breadcrumb" aria-label="Migas de pan">
+            <ol>
+              <li>
+                <a href="/blog">Blog</a>
+              </li>
+              <li>
+                <a href={`/blog/categoria/${cat.slug}`}>{categoria}</a>
+              </li>
+            </ol>
+          </nav>
+          <Etiqueta>{categoria}</Etiqueta>
+          <h1 class="h1" style="font-size:clamp(34px, 4.4vw, 52px)">
+            {titulo}
+            <span class="dot">.</span>
+          </h1>
+          <p class="lead">{resumen}</p>
+          <div class="article-meta">
+            <span>
+              <Icono nombre="people" />
+              {autor}
+            </span>
+            <span>
+              <Icono nombre="calendar" />
+              <time datetime={fechaISO}>{formatoFecha(fecha)}</time>
+            </span>
+            {minutos > 0 && (
+              <span>
+                <Icono nombre="clock" />
+                {minutos} min de lectura
+              </span>
+            )}
+          </div>
+        </div>
+        {imagen ? (
+          <img class="article-img" src={imagen} alt={imagenAlt} width="420" height="280" />
+        ) : (
+          <div class:list={['post-art article-art', cat.clase]} aria-hidden="true" />
+        )}
+      </div>
+    </header>
+
+    <div class="article-body">
+      <div class="wrap">
+        <div class="prose">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section class="section" style="padding-top:64px">
+    <div class="wrap section-inner" style="gap:48px">
+      <div class="dark-cta">
+        <div>
+          <div class="label" style="color:var(--g400)">
+            Revisión digital gratuita
+          </div>
+          <h2 class="t">¿Te ves reflejado en alguno de estos temas?</h2>
+          <div class="s">Lo revisamos contigo, sin coste: revisión digital gratuita de aprox. 4 h.</div>
+        </div>
+        <a class="btn btn-cta" href="/#reserva">
+          Reservar mi revisión gratuita <Icono nombre="arrow-r" />
+        </a>
+      </div>
+      {relacionados.length > 0 && (
+        <div class="section-inner" style="gap:28px">
+          <div class="section-head-row">
+            <h2 class="h2" style="font-size:clamp(26px, 3vw, 32px)">
+              Sigue leyendo<span class="dot">.</span>
+            </h2>
+            <a class="btn btn-out" href="/blog">
+              Ver todas las noticias
+            </a>
+          </div>
+          <div class="grid grid-3">
+            {relacionados.map((a) => (
+              <TarjetaArticulo articulo={a} nivel="h3" />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
