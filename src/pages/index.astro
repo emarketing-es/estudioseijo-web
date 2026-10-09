@@ -9,9 +9,10 @@ import Servicios from '@/components/inicio/Servicios.astro';
 import Software from '@/components/inicio/Software.astro';
 import Reserva from '@/components/reserva/Reserva.astro';
 import Base from '@/layouts/Base.astro';
+import { esquemaEmpresa, esquemaSitioWeb } from '@/lib/seo';
 ---
 
-<Base>
+<Base esquemas={[esquemaEmpresa(), esquemaSitioWeb()]}>
   <Hero />
   <Casos />
   <Reserva />

@@ -18,6 +18,8 @@ interface Props {
   noindex?: boolean;
   /** Portada: el <title> es «Estudio Seijo · lema» en lugar de «Título · Estudio Seijo». */
   portada?: boolean;
+  imagen?: string;
+  esquemas?: Record<string, unknown>[];
 }
 
 const {
@@ -29,10 +31,18 @@ const {
   calida = false,
   noindex,
   portada = false,
+  imagen,
+  esquemas,
 } = Astro.props;
 ---
 
-<Base titulo={portada ? undefined : titulo} descripcion={descripcion} noindex={noindex}>
+<Base
+  titulo={portada ? undefined : titulo}
+  descripcion={descripcion}
+  noindex={noindex}
+  imagen={imagen}
+  esquemas={esquemas}
+>
   <section class:list={['page-hero', { warm: calida }]}>
     <div class="wrap">
       <div class="copy">
