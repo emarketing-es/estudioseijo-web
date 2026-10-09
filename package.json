@@ -20,7 +20,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "verify": "pnpm lint && pnpm format:check && pnpm check && pnpm test && pnpm build",
-    "cms": "decap-server"
+    "cms": "decap-server",
+    "prototipo": "node scripts/exportar-prototipo.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",
