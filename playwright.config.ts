@@ -30,6 +30,8 @@ export default defineConfig({
       // Sitio sin credenciales de Google: la reserva funciona en modo provisional (WhatsApp/email)
       command: `pnpm preview --port ${PUERTO} --ignore-lock`,
       url: `http://localhost:${PUERTO}`,
+      // El adaptador de Netlify no admite `astro preview`: se prueba la build de `pnpm build:pruebas`
+      env: { ASTRO_ADAPTADOR: 'node' },
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
     },

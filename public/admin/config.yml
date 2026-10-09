@@ -5,9 +5,8 @@ backend:
   name: github
   repo: emarketing-es/estudioseijo-web
   branch: main
-  # PENDIENTE (hosting): para entrar con GitHub desde la web publicada hace falta un servicio de
-  # autenticación OAuth. En Netlify es automático; en otros hostings se indica aquí con `base_url`.
-  # base_url: https://…
+  # El acceso con GitHub usa el proveedor OAuth de Netlify (configuración en el README:
+  # «Cómo publicar en el blog» → «Quién puede publicar»).
 
 # Modo local: con `pnpm cms` en marcha, /admin edita los archivos del ordenador sin pasar por GitHub.
 local_backend: true

@@ -1,18 +1,22 @@
 // @ts-check
+import netlify from '@astrojs/netlify';
 import node from '@astrojs/node';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
 
 // Configuración de Astro.
 // Todas las páginas se generan como HTML estático; solo /api/disponibilidad y /api/reservas se ejecutan en el
-// servidor. Adaptador de Node mientras el hosting está por decidir (en Netlify o Cloudflare se cambia esta línea).
+// servidor (funciones de Netlify). Las pruebas e2e construyen con el adaptador de Node (ASTRO_ADAPTADOR=node)
+// para poder arrancar el servidor en local y en la integración continua; la lógica es la misma.
+const adaptador = process.env.ASTRO_ADAPTADOR === 'node' ? node({ mode: 'standalone' }) : netlify();
+
 export default defineConfig({
   site: 'https://estudioseijo.com',
   trailingSlash: 'ignore',
   build: {
     format: 'directory',
   },
-  adapter: node({ mode: 'standalone' }),
+  adapter: adaptador,
   integrations: [
     // sitemap-index.xml con las páginas indexables (sin confirmación de reserva, CMS ni páginas técnicas)
     sitemap({

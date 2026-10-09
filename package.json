@@ -21,10 +21,11 @@
     "test:e2e": "playwright test",
     "verify": "pnpm lint && pnpm format:check && pnpm check && pnpm test && pnpm build",
     "cms": "decap-server",
-    "prototipo": "node scripts/exportar-prototipo.mjs"
+    "prototipo": "node scripts/exportar-prototipo.mjs",
+    "build:pruebas": "ASTRO_ADAPTADOR=node pnpm build"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.7",
+    "@astrojs/netlify": "^8.2.9",
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/dm-sans": "^5.3.0",
     "@fontsource/dm-mono": "^5.3.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/node": "^11.1.7",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.0",

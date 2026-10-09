@@ -29,8 +29,10 @@ jobs:
         run: pnpm check
       - name: Tests unitarios
         run: pnpm test
-      - name: Build
+      - name: Build (Netlify, como en producción)
         run: pnpm build
+      - name: Build para las pruebas e2e (adaptador de Node)
+        run: pnpm build:pruebas
       - name: Instalar Chromium para Playwright
         run: pnpm exec playwright install --with-deps chromium
       - name: Tests e2e

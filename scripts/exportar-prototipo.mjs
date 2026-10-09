@@ -2,11 +2,21 @@
 // página privada: rutas relativas (sin depender de la raíz del dominio), tipografías incrustadas en el CSS y
 // reservas simuladas en el navegador (scripts/prototipo/simulador.js).
 // Uso: pnpm build && node scripts/exportar-prototipo.mjs <carpeta-destino>
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, extname, join, relative } from 'node:path';
 
 const raiz = new URL('..', import.meta.url).pathname;
-const origen = join(raiz, 'dist/client');
+// Con el adaptador de Node los estáticos quedan en dist/client; con el de Netlify, en dist
+const origen = existsSync(join(raiz, 'dist/client')) ? join(raiz, 'dist/client') : join(raiz, 'dist');
 const destino = process.argv[2];
 if (!destino) throw new Error('Indica la carpeta de destino: node scripts/exportar-prototipo.mjs <carpeta>');
 
