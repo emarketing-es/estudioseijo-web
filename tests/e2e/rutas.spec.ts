@@ -1,11 +1,13 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-/** Todas las rutas del sitio en la fase 1. */
+/** Todas las rutas del sitio (una de cada tipo para las dinámicas). */
 const rutas = [
   '/',
   '/blog',
   '/blog/categoria/web-y-ecommerce',
+  '/blog/categoria/automatizacion-e-ia',
+  '/blog/web-nueva-o-mejorar-la-actual',
   '/opiniones',
   '/aviso-legal',
   '/privacidad',

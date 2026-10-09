@@ -22,7 +22,7 @@ export const sitio = {
 
 export const contacto = {
   telefono: { visible: '981 774 892', enlace: 'tel:+34981774892', e164: '+34981774892' },
-  whatsapp: { visible: '633 923 567', enlace: 'https://wa.me/34633923567' },
+  whatsapp: { visible: '633 923 567', enlace: 'https://wa.me/34633923567', numero: '34633923567' },
   email: { visible: 'info@estudioseijo.com', enlace: 'mailto:info@estudioseijo.com' },
   localidad: 'Betanzos',
   provincia: 'A Coruña',

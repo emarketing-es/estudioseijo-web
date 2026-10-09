@@ -1,0 +1,23 @@
+---
+/** Cabecera de sección de la maqueta: etiqueta, h2 con punto naranja final y entradilla opcional. */
+import Etiqueta from './Etiqueta.astro';
+
+interface Props {
+  etiqueta: string;
+  titulo: string;
+  entradilla?: string;
+  /** id del h2, para `aria-labelledby` de la sección. */
+  id?: string;
+}
+
+const { etiqueta, titulo, entradilla, id } = Astro.props;
+---
+
+<div class="section-head">
+  <Etiqueta>{etiqueta}</Etiqueta>
+  <h2 class="h2" id={id}>
+    {titulo}
+    <span class="dot">.</span>
+  </h2>
+  {entradilla && <p class="lead">{entradilla}</p>}
+</div>

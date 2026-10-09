@@ -27,6 +27,7 @@
   --alert: #c8b080;
   --alert-l: #f6f1e9;
   --alert-ink: #6e5c2e;
+  --error: #a3322a; /* mensajes de error de formulario (maqueta) */
 
   /* Texto sobre fondo oscuro */
   --on-dark: #ffffff;

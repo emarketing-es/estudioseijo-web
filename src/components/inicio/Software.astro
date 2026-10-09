@@ -1,0 +1,38 @@
+---
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import { formatoCuota, licencias } from '@/data/software';
+---
+
+<section class="section section-white" id="software">
+  <div class="wrap section-inner">
+    <CabeceraSeccion
+      etiqueta="Software propio · Licencias SaaS"
+      titulo="Software propio para el día a día de tu negocio"
+      entradilla="Además de proyectos a medida, desarrollamos y mantenemos nuestro propio software: soluciones listas para implantar, con formación y soporte cercano."
+    />
+    <div class="grid grid-sw">
+      {licencias.map((l) => (
+        <div class="card sw">
+          <h3 class="sw-name">{l.nombre}</h3>
+          <p class="body" style="font-size:14px">
+            {l.descripcion}
+          </p>
+          <div class="sw-price">
+            {l.cuota === null ? (
+              <>
+                <b>Consultar</b> · proyecto a medida
+              </>
+            ) : (
+              <>
+                desde <b>{formatoCuota(l.cuota)}</b> + IVA
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+    <p class="small">
+      Precios «desde». Cuotas mensuales, impuestos no incluidos. Implantación según proyecto.
+    </p>
+  </div>
+</section>

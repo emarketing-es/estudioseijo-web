@@ -1,0 +1,34 @@
+---
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import CirculoIcono from '@/components/ui/CirculoIcono.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { servicios } from '@/data/inicio';
+---
+
+<section class="section" id="servicios">
+  <div class="wrap section-inner">
+    <CabeceraSeccion
+      etiqueta="Nuestras especialidades"
+      titulo="Tecnología aplicada a necesidades reales"
+      entradilla="Trabajamos desde el problema que hay que resolver. Primero entendemos cómo funciona tu negocio y qué necesita mejorar; después buscamos la solución tecnológica más adecuada."
+    />
+    <div class="grid grid-3">
+      {servicios.map((s) => (
+        <div class="card service">
+          <CirculoIcono icono={s.icono} info={s.info} />
+          <h3 class="h3">{s.titulo}</h3>
+          <p class="body">{s.texto}</p>
+        </div>
+      ))}
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;font-size:15px;color:var(--g800)">
+      <span style="color:var(--cta-strong);display:inline-flex">
+        <Icono nombre="check" />
+      </span>
+      <span>
+        La <b style="font-weight:500">revisión digital gratuita</b> puede tocar cualquiera de estas áreas:
+        solo cuéntanos el problema.
+      </span>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,51 @@
+---
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import CirculoIcono from '@/components/ui/CirculoIcono.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { casos, pasos } from '@/data/inicio';
+---
+
+<section class="section">
+  <div class="wrap section-inner">
+    <CabeceraSeccion
+      etiqueta="Revisión digital gratuita"
+      titulo="¿Te pasa alguna de estas cosas?"
+      entradilla="Quizá sea algo que llevas tiempo pensando. Una tarea, un proceso, una web, una idea… Te ayudamos a verlo claro."
+    />
+    <div class="grid grid-cases">
+      {casos.map((caso) => (
+        <div class="card case">
+          <CirculoIcono icono={caso.icono} info={caso.info} pequeno />
+          <span>{caso.titulo}</span>
+        </div>
+      ))}
+    </div>
+    <div class="tellus">
+      <div>
+        <div class="tellus-title">
+          Cuéntanoslo. Sin más<span class="dot">.</span>
+        </div>
+        <p class="body" style="font-size:16px">
+          No necesitas saber qué tecnología utilizar ni qué solución pedirnos. Empieza simplemente contándonos
+          el problema o la idea.
+        </p>
+      </div>
+      <a class="btn btn-dark" href="#reserva">
+        Elegir día y hora <Icono nombre="arrow-r" />
+      </a>
+    </div>
+    <ol class="steps">
+      {pasos.map((paso, i) => (
+        <li>
+          <span class="step-n">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <div style="font-size:17px;font-weight:500">{paso.titulo}</div>
+            <p class="body" style="margin-top:4px">
+              {paso.texto}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

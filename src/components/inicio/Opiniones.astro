@@ -1,0 +1,27 @@
+---
+import RejillaOpiniones from '@/components/opiniones/RejillaOpiniones.astro';
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import EnlaceGoogle from '@/components/ui/EnlaceGoogle.astro';
+import { google } from '@/config/sitio';
+---
+
+<section class="section section-white">
+  <div class="wrap section-inner" style="gap:36px">
+    <div class="section-head-row">
+      <CabeceraSeccion
+        etiqueta="Opiniones"
+        titulo="Lo que dicen nuestros clientes"
+        entradilla="Muy pronto, aquí verás las reseñas que nuestros clientes publican en Google."
+      />
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <a class="btn btn-out" href="/opiniones">
+          Ver todas las opiniones
+        </a>
+        <EnlaceGoogle href={google.resenaUrl} clase="btn-dark">
+          Escribir una reseña en Google
+        </EnlaceGoogle>
+      </div>
+    </div>
+    <RejillaOpiniones minimo={3} maximo={3} />
+  </div>
+</section>

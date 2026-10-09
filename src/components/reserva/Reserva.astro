@@ -1,0 +1,240 @@
+---
+/**
+ * Sección de reserva de la revisión digital gratuita (maqueta).
+ *
+ * Fase 2 (provisional): huecos calculados con reglas fijas (src/config/reservas.ts) y envío de la solicitud
+ * por WhatsApp o email desde el navegador del visitante, como en la maqueta.
+ * Fase 4: huecos reales de Google Calendar (/api/disponibilidad) y reserva creada en el servidor.
+ * Plan B: si existe PUBLIC_GOOGLE_BOOKING_URL, se muestra la agenda de citas de Google en su lugar.
+ */
+import Etiqueta from '@/components/ui/Etiqueta.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { modalidades } from '@/config/reservas';
+import { contacto } from '@/config/sitio';
+
+const agendaGoogle = import.meta.env.PUBLIC_GOOGLE_BOOKING_URL as string | undefined;
+const urlAgenda = agendaGoogle ? `${agendaGoogle}${agendaGoogle.includes('?') ? '&' : '?'}gv=true` : null;
+const DIAS_SEMANA = [
+  ['L', 'lunes'],
+  ['M', 'martes'],
+  ['X', 'miércoles'],
+  ['J', 'jueves'],
+  ['V', 'viernes'],
+  ['S', 'sábado'],
+  ['D', 'domingo'],
+];
+---
+
+<section class="section section-dark" id="reserva" aria-labelledby="reserva-title">
+  <div class="wrap section-inner" style="gap:36px">
+    <div class="booking-head">
+      <div class="section-head">
+        <Etiqueta>Reserva online · Aprox. 4 h · 0 €</Etiqueta>
+        <h2 class="h2" id="reserva-title">
+          Reserva tu revisión digital gratuita<span class="dot">.</span>
+        </h2>
+        <p class="lead">Elige un día y una hora libres y déjanos tus datos. 100 % sin compromiso.</p>
+      </div>
+      <div class="sync">
+        <Icono nombre="calendar" />
+        Calendario de Estudio Seijo · hora de Madrid
+      </div>
+    </div>
+
+    {urlAgenda ? (
+      <div class="panel" id="booking-google">
+        <iframe
+          class="gcal-frame"
+          src={urlAgenda}
+          title="Calendario de reservas de Estudio Seijo"
+          loading="lazy"
+        />
+        <p class="small" style="margin-top:12px">
+          ¿No ves el calendario?{' '}
+          <a href={agendaGoogle} target="_blank" rel="noopener">
+            Ábrelo en una pestaña nueva
+          </a>
+          .
+        </p>
+      </div>
+    ) : (
+      <>
+        <div class="panel" id="booking-widget">
+          <noscript>
+            <p class="hint-box" style="margin-bottom:24px">
+              Para elegir día y hora en el calendario necesitas activar JavaScript. También puedes reservar
+              llamando al {contacto.telefono.visible} o por WhatsApp al {contacto.whatsapp.visible}.
+            </p>
+          </noscript>
+          <div class="booking-grid">
+            <div class="booking-col">
+              <div class="label" id="cal-titulo">
+                1 · Elige el día
+              </div>
+              <div class="cal-nav">
+                <button type="button" id="cal-prev" aria-label="Mes anterior">
+                  <Icono nombre="arrow-l" />
+                </button>
+                <div class="cal-month" id="cal-month" aria-live="polite">
+                  Mes
+                </div>
+                <button type="button" id="cal-next" aria-label="Mes siguiente">
+                  <Icono nombre="arrow-r" />
+                </button>
+              </div>
+              <div class="cal-grid" id="cal-grid" role="group" aria-labelledby="cal-titulo cal-month">
+                {DIAS_SEMANA.map(([letra, nombre]) => (
+                  <div class="cal-dow" aria-hidden="true" title={nombre}>
+                    {letra}
+                  </div>
+                ))}
+              </div>
+              <p class="sr-only" id="cal-ayuda">
+                Usa las flechas para moverte entre los días disponibles y Re Pág o Av Pág para cambiar de mes.
+              </p>
+              <div class="legend">
+                <span>
+                  <i style="border:1px solid var(--g400);background:var(--card)" />
+                  Disponible
+                </span>
+                <span>
+                  <i style="background:var(--cta)" />
+                  Seleccionado
+                </span>
+                <span>
+                  <i style="background:var(--g100)" />
+                  Sin huecos
+                </span>
+              </div>
+            </div>
+
+            <div class="booking-col narrow">
+              <div class="label">2 · Elige la hora</div>
+              <div class="hint-box" id="no-day">
+                Selecciona primero un día disponible en el calendario.
+              </div>
+              <div id="slots-wrap" class="stack" style="gap:12px" hidden>
+                <div style="font-size:16px;font-weight:500" id="day-label" />
+                <div class="slots" id="slots" role="group" aria-label="Horas disponibles" />
+                <div class="small">Hora peninsular (Madrid). Primera reunión: 1 h aprox.</div>
+              </div>
+              <div class="label" style="margin-top:8px">
+                Modalidad
+              </div>
+              <div class="modes" role="group" aria-label="Modalidad de la reunión">
+                {modalidades.map((modalidad, i) => (
+                  <button
+                    type="button"
+                    class="mode"
+                    data-modalidad={modalidad}
+                    aria-pressed={i === 0 ? 'true' : 'false'}
+                  >
+                    <Icono nombre={i === 0 ? 'video' : 'pin'} />
+                    {modalidad}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <form class="booking-col" id="booking-form" novalidate>
+              <div class="label">3 · Tus datos</div>
+              <div class="field">
+                <label for="r-nombre">Nombre y apellidos</label>
+                <input id="r-nombre" name="nombre" type="text" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="r-empresa">Empresa</label>
+                <input id="r-empresa" name="empresa" type="text" autocomplete="organization" />
+              </div>
+              <div class="row2">
+                <div class="field">
+                  <label for="r-email">Email</label>
+                  <input id="r-email" name="email" type="email" autocomplete="email" required />
+                </div>
+                <div class="field">
+                  <label for="r-tel">Teléfono</label>
+                  <input id="r-tel" name="telefono" type="tel" autocomplete="tel" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="r-msg">¿Qué te gustaría mejorar? (opcional)</label>
+                <textarea
+                  id="r-msg"
+                  name="mensaje"
+                  rows="3"
+                  placeholder="Cuéntanos el problema o la idea, sin tecnicismos."
+                />
+              </div>
+              <label class="consent">
+                <input id="r-privacy" name="privacidad" type="checkbox" required />
+                <span>
+                  Acepto la <a href="/privacidad">política de privacidad</a> y que Estudio Seijo me contacte
+                  para esta reunión.
+                </span>
+              </label>
+              <div class="summary">
+                <Icono nombre="calendar" />
+                <span id="summary" aria-live="polite">
+                  Elige día y hora en el calendario
+                </span>
+              </div>
+              <p class="form-error" id="form-error" role="alert" hidden />
+              <button type="submit" class="btn btn-cta" id="submit" aria-disabled="true" style="width:100%">
+                Elige día y hora para confirmar
+              </button>
+              <div class="small">100 % sin compromiso. Una revisión gratuita por empresa.</div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel done" id="booking-done" hidden tabindex="-1" aria-labelledby="done-title">
+          <div class="done-icon">
+            <Icono nombre="check" />
+          </div>
+          <h3 class="done-title" id="done-title">
+            Último paso: envíanos tu solicitud
+          </h3>
+          <p style="font-size:18px;color:var(--g800)" id="done-summary" />
+          <p class="body" style="max-width:560px">
+            Tu reunión queda reservada en cuanto la recibamos y te confirmemos por email. Envíala por WhatsApp
+            o por email:
+          </p>
+          <div class="stack" style="gap:14px;align-items:center;width:100%">
+            <div class="send-row">
+              <a
+                class="btn btn-cta"
+                id="wa-link"
+                href={contacto.whatsapp.enlace}
+                target="_blank"
+                rel="noopener"
+                data-evento="click_whatsapp"
+              >
+                <Icono nombre="chat" />
+                Enviar por WhatsApp
+              </a>
+              <a class="btn btn-out" id="mail-link" href={contacto.email.enlace}>
+                <Icono nombre="mail" />
+                Enviar por email
+              </a>
+            </div>
+            <div class="copy-box" id="copy-box" />
+            <button type="button" class="btn btn-out btn-sm" id="copy-btn">
+              Copiar texto
+            </button>
+            <p class="small">
+              También puedes llamarnos al {contacto.telefono.visible} o escribir a {contacto.email.visible}.
+            </p>
+          </div>
+          <button type="button" class="btn btn-out btn-sm" id="again">
+            Elegir otra fecha
+          </button>
+        </div>
+      </>
+    )}
+  </div>
+</section>
+
+<script>
+  import { iniciarReserva } from './reserva';
+  iniciarReserva();
+</script>
