@@ -67,7 +67,7 @@ for (const archivo of archivos(origen).filter((a) => !EXCLUIR.test(a))) {
   }
 }
 const simulador = readFileSync(join(raiz, 'scripts/prototipo/simulador.js'), 'utf8')
-  .replace('__FESTIVOS__', JSON.stringify(festivos))
-  .replace('__FRANJAS__', franjas);
+  .replace('= __FESTIVOS__;', `= ${JSON.stringify(festivos)};`)
+  .replace('= __FRANJAS__;', `= ${franjas};`);
 writeFileSync(join(destino, 'prototipo-simulador.js'), simulador);
 console.log(`Prototipo exportado en ${destino} (${archivos(destino).length} archivos)`);
