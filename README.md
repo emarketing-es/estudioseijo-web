@@ -47,7 +47,7 @@ pnpm dev              # servidor de desarrollo en http://localhost:4321
 
 ### Tests de extremo a extremo
 
-`pnpm test:e2e` no construye el sitio por sí solo: ejecuta antes `pnpm build`. La primera vez instala el navegador con
+`pnpm test:e2e` no construye el sitio por sí solo: ejecuta antes `pnpm build:pruebas` (adaptador de Node). La primera vez instala el navegador con
 `pnpm exec playwright install chromium`. Si ya tienes un Chromium instalado, puedes indicar su ruta en la variable
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE`.
 
@@ -99,9 +99,10 @@ sustituyen por datos de ejemplo.
 
 ## Decisiones técnicas
 
-- **Astro con páginas estáticas y dos funciones de servidor.** Todas las páginas se generan como HTML (carga muy
-  rápida); solo `/api/disponibilidad` y `/api/reservas` se ejecutan en el servidor. Adaptador de Node
-  (`@astrojs/node`) mientras se decide el hosting: en Netlify o Cloudflare se cambia una línea de `astro.config.mjs`.
+- **Astro con páginas estáticas y dos funciones de servidor, en Netlify.** Todas las páginas se generan como HTML
+  (carga muy rápida); solo `/api/disponibilidad` y `/api/reservas` se ejecutan como función de Netlify
+  (`@astrojs/netlify`). Las pruebas e2e construyen con el adaptador de Node (`pnpm build:pruebas`) para poder
+  arrancar el servidor en local y en la integración continua; la lógica es la misma.
 - **Tipografías servidas desde nuestro dominio** (`@fontsource`). DM Sans en versión variable con eje de tamaño
   óptico, igual que la maqueta con Google Fonts, pero sin enviar la IP del visitante a Google antes del
   consentimiento y sin depender de un servidor externo.
@@ -137,9 +138,10 @@ El calendario se maneja con teclado: flechas para moverse entre días disponible
 
 ### Conectar Google Calendar
 
-Hay dos opciones según el tipo de cuenta de Google de Estudio Seijo (**PENDIENTE**: confirmar cuál es).
+Estudio Seijo usa **Google Workspace**: se conecta con una cuenta de servicio con delegación de dominio (opción A).
+La opción B queda documentada por si algún día se usara una cuenta de Gmail.
 
-**Opción A · Google Workspace (recomendada): cuenta de servicio con delegación de dominio**
+**Opción A · Google Workspace: cuenta de servicio con delegación de dominio**
 
 1. En [Google Cloud Console](https://console.cloud.google.com/) crea un proyecto (p. ej. «estudioseijo-web») y
    activa la **Google Calendar API** (APIs y servicios → Biblioteca).
@@ -167,8 +169,9 @@ Hay dos opciones según el tipo de cuenta de Google de Estudio Seijo (**PENDIENT
 5. Variables de entorno: `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` y
    `GOOGLE_CALENDAR_ID` (la dirección de Gmail o el ID del calendario).
 
-Si están las dos, se usa la cuenta de servicio. Las credenciales son secretos: van en `.env` (local) o en el panel
-del hosting, **nunca** en el repositorio.
+Si están las dos, se usa la cuenta de servicio. Las credenciales son secretos: van en `.env` (local) o en Netlify
+(Site configuration → Environment variables), **nunca** en el repositorio. La clave privada puede pegarse en
+Netlify tal cual, con sus saltos de línea, o en una sola línea con `\n`.
 
 ### Correo y anti-spam
 
@@ -239,9 +242,12 @@ generan solos.
 Cada persona que publique necesita una **cuenta de GitHub con permiso de escritura** en este repositorio. Al
 entrar en `/admin` se pulsa «Iniciar sesión con GitHub».
 
-> **Pendiente (hosting):** el acceso con GitHub desde la web publicada necesita un servicio de autenticación
-> (automático en Netlify; en otros hostings se configura `base_url` en `public/admin/config.yml`). Mientras el
-> hosting no esté decidido, el gestor se usa en modo local.
+Para que el botón funcione en la web publicada, una sola vez:
+
+1. En GitHub (de la organización o de quien administre el repositorio): Settings → Developer settings → OAuth
+   Apps → New OAuth App. Homepage: `https://estudioseijo.com`; Authorization callback URL:
+   `https://api.netlify.com/auth/done`. Copia el Client ID y genera un Client secret.
+2. En Netlify: Site configuration → Access & security → OAuth → Install provider → GitHub, y pega ambos datos.
 
 ### Modo local (en el ordenador, sin GitHub)
 
@@ -277,6 +283,20 @@ Lighthouse en móvil (sitio construido, 9/10/2026):
 **simuladas** en el navegador (`scripts/prototipo/simulador.js`, con un aviso visible), para revisarlo en una página
 privada o en cualquier alojamiento estático. No sustituye al despliegue real.
 
+## Despliegue en Netlify
+
+1. Netlify → Add new site → Import an existing project → GitHub → `emarketing-es/estudioseijo-web`, rama `main`.
+   La configuración de build está en `netlify.toml` (`pnpm build`, Node 24); no hay que tocar nada más.
+2. Site configuration → Environment variables: las de `.env.example` que tengáis (Google, correo, Turnstile, GA4).
+   Las `PUBLIC_*` se leen al construir: si se cambian, hay que volver a desplegar (Deploys → Trigger deploy).
+3. Domain management → añade `estudioseijo.com` y `www.estudioseijo.com` y sigue las instrucciones de DNS de
+   Netlify (HTTPS automático con Let's Encrypt).
+4. Activa el acceso al CMS (ver «Quién puede publicar»).
+5. Comprueba: una reserva de prueba, una URL antigua `/noticia/…` (debe redirigir con 301) y `/admin`.
+6. Search Console: alta del dominio y envío de `https://estudioseijo.com/sitemap-index.xml`.
+
+Cada cambio en `main` se despliega solo; cada _pull request_ tiene su vista previa en Netlify.
+
 ## Integración continua
 
 En cada _pull request_ y en cada _push_ a `main`, GitHub Actions ejecuta: lint, formato, tipos, tests unitarios,
@@ -289,9 +309,6 @@ configuran en el panel del hosting. Las variables con prefijo `PUBLIC_` llegan a
 secretos.
 
 ## Pendiente de documentar en sus fases
-
-- **Despliegue** (depende del hosting, pendiente de confirmar): fase 7. Con el adaptador actual, `pnpm build` genera
-  `dist/client` (estático) y `dist/server/entry.mjs` (se ejecuta con `node dist/server/entry.mjs`, puerto en `PORT`).
 
 ## Forma de trabajo
 
