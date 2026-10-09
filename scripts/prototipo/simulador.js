@@ -1,3 +1,4 @@
+/* global __FESTIVOS__, __FRANJAS__ -- los sustituye scripts/exportar-prototipo.mjs al exportar */
 // Solo para el PROTOTIPO navegable (scripts/exportar-prototipo.mjs): simula las funciones de servidor de la
 // reserva en el navegador, porque el prototipo se publica sin servidor. No se crea ninguna cita real.
 (function () {
