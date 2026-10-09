@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reserva/confirmada
+
+Sitemap: https://estudioseijo.com/sitemap-index.xml

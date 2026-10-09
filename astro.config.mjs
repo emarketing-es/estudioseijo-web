@@ -1,5 +1,6 @@
 // @ts-check
 import node from '@astrojs/node';
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
 
 // Configuración de Astro.
@@ -12,6 +13,12 @@ export default defineConfig({
     format: 'directory',
   },
   adapter: node({ mode: 'standalone' }),
+  integrations: [
+    // sitemap-index.xml con las páginas indexables (sin confirmación de reserva, CMS ni páginas técnicas)
+    sitemap({
+      filter: (pagina) => !/\/(reserva\/confirmada|admin|404)(\/|$)/.test(new URL(pagina).pathname),
+    }),
+  ],
   devToolbar: {
     enabled: false,
   },
