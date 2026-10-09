@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>estudioseijo. — Design System v1.0</title>
+<style>
+/* ── INSTRUCCIONES FIGMA ──
+   1. Importa las fuentes DM Sans + DM Mono desde Google Fonts
+   2. Crea Variables de color desde la pestaña "Design Tokens"
+   3. Usa la escala tipográfica para definir Text Styles
+   4. Replica los componentes como Figma Components
+   5. Usa los wireframes como base para los Frames de landing
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── COLOR TOKENS ── */
+  --color-black:     #0A0A0A;
+  --color-white:     #FAFAF8;
+  --color-bg:        #EDEDE9;
+  --color-grey-100:  #F2F2F0;
+  --color-grey-200:  #E0E0DC;
+  --color-grey-400:  #A0A09A;
+  --color-grey-600:  #5A5A55;
+  --color-grey-800:  #2A2A28;
+
+  /* ── COLORES FUNCIONALES ── */
+  --color-cta:         #E07A3A;   /* naranja — llamada a la acción */
+  --color-cta-light:   #FDF0E8;   /* fondo suave CTA */
+  --color-ok:          #85AFA0;   /* verde — éxito / confirmación */
+  --color-ok-light:    #EBF4F1;
+  --color-nook:        #BF9090;   /* rojo — error / nook */
+  --color-nook-light:  #F5ECEC;
+  --color-alert:       #C8B080;   /* ámbar — alerta / advertencia */
+  --color-alert-light: #F6F1E9;
+  --color-info:        #8AAEC8;   /* azul — informativo */
+  --color-info-light:  #EAF0F6;
+
+  /* ── TIPOGRAFÍA ── */
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  /* ── TYPE SCALE ── */
+  --text-display: 48px;
+  --text-h2:      36px;
+  --text-h3:      24px;
+  --text-h4:      18px;
+  --text-body-lg: 16px;
+  --text-body:    14px;
+  --text-sm:      12px;
+  --text-xs:      11px;
+
+  /* ── ESPACIADO 4px base ── */
+  --space-1:  4px;   --space-2:  8px;
+  --space-3:  12px;  --space-4:  16px;
+  --space-6:  24px;  --space-8:  32px;
+  --space-12: 48px;  --space-16: 64px;
+  --space-20: 80px;  --space-30: 120px;
+
+  /* ── BORDER RADIUS ── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-full: 9999px;
+
+  /* ── SOMBRAS ── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+
+  /* ── TRANSICIONES ── */
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.35s ease;
+
+  /* ── GRID ── */
+  --grid-cols:   12;
+  --grid-gutter: 24px;
+  --grid-margin: 48px;
+  --grid-max:    1200px;
+}
+
+body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-black); }
+
+/* ═══ LAYOUT ═══ */
+.page { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+.section { margin-bottom: 64px; }
+.section-title {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--color-grey-400); margin-bottom: 20px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--color-grey-200);
+  font-family: var(--font-mono);
+}
+
+/* ═══ HEADER ═══ */
+.header {
+  background: var(--color-black); padding: 40px 48px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px; border-radius: var(--radius-lg);
+}
+.header-logo { display: flex; align-items: center; gap: 10px; }
+.header-logo span { font-size: 22px; font-weight: 500; color: white; letter-spacing: -0.02em; }
+.header-meta { font-size: 11px; color: var(--color-grey-600); font-family: var(--font-mono); text-align: right; line-height: 2; }
+
+/* ═══ COLOR SWATCHES ═══ */
+.color-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.color-chip { border-radius: var(--radius-md); overflow: hidden; border: 0.5px solid rgba(0,0,0,0.08); width: 110px; }
+.color-swatch { height: 60px; }
+.color-info { padding: 8px 10px; background: white; }
+.color-name { font-size: 11px; font-weight: 500; }
+.color-hex { font-size: 10px; color: var(--color-grey-400); font-family: var(--font-mono); }
+
+/* ═══ TYPE SCALE ═══ */
+.type-row { display: flex; align-items: baseline; gap: 20px; padding: 16px 0; border-bottom: 0.5px solid var(--color-grey-200); }
+.type-label { font-family: var(--font-mono); font-size: 10px; color: var(--color-grey-400); width: 120px; flex-shrink: 0; }
+.type-meta { font-family: var(--font-mono); font-size: 10px; color: var(--color-grey-400); margin-left: auto; }
+
+/* ═══ BUTTONS ═══ */
+.btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); cursor: pointer; border: none; padding: 10px 18px; letter-spacing: -0.01em; text-decoration: none; }
+.btn-primary { background: var(--color-black); color: white; }
+.btn-secondary { background: transparent; color: var(--color-black); border: 1.5px solid var(--color-black); }
+.btn-ghost { background: transparent; color: var(--color-grey-600); }
+.btn-cta { background: var(--color-cta); color: white; }
+.btn-cta:hover { background: #B07358; }
+.btn-sm { font-size: 11px; padding: 7px 13px; }
+.btn-lg { font-size: 15px; padding: 13px 24px; }
+.btn-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+
+/* ═══ TAGS ═══ */
+.tag { display: inline-flex; align-items: center; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-family: var(--font-mono); }
+.tag-default { background: var(--color-grey-100); color: var(--color-grey-600); }
+.tag-dark { background: var(--color-black); color: white; }
+.tag-outline { border: 1px solid var(--color-grey-200); color: var(--color-grey-600); }
+.tags-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ═══ INPUT ═══ */
+.input-field { width: 100%; padding: 10px 14px; border: 1.5px solid var(--color-grey-200); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 13px; color: var(--color-black); background: white; outline: none; }
+.input-label { font-size: 11px; font-weight: 500; color: var(--color-grey-600); margin-bottom: 5px; display: block; letter-spacing: 0.03em; }
+.input-wrap { margin-bottom: 10px; }
+
+/* ═══ CARDS ═══ */
+.service-card { background: white; border-radius: var(--radius-md); padding: 24px; border: 0.5px solid var(--color-grey-200); }
+.service-card-icon { width: 40px; height: 40px; border: 1px solid var(--color-grey-200); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.service-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 8px; letter-spacing: -0.01em; }
+.service-card p { font-size: 13px; color: var(--color-grey-600); line-height: 1.6; }
+.service-card-cta { margin-top: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+
+/* ═══ COMP GRID ═══ */
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.comp-card { background: white; border-radius: var(--radius-md); padding: 24px; border: 0.5px solid var(--color-grey-200); }
+.comp-card-title { font-size: 10px; color: var(--color-grey-400); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; font-family: var(--font-mono); }
+
+/* ═══ NAV ═══ */
+.nav-comp { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: white; border-radius: var(--radius-md); border: 0.5px solid var(--color-grey-200); margin-bottom: 10px; }
+.nav-logo { display: flex; align-items: center; gap: 8px; }
+.nav-logo span { font-size: 14px; font-weight: 500; }
+.nav-links { display: flex; gap: 24px; }
+.nav-link { font-size: 12px; color: var(--color-grey-600); }
+
+/* ═══ SPACING GRID ═══ */
+.spacing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 48px; }
+.spacing-row { display: flex; align-items: center; gap: 14px; }
+.spacing-bar { background: var(--color-black); height: 10px; border-radius: 2px; }
+.spacing-token { font-family: var(--font-mono); font-size: 10px; color: var(--color-grey-400); width: 50px; }
+.spacing-name { font-size: 11px; color: var(--color-grey-600); }
+
+/* ═══ GRID VIS ═══ */
+.grid-vis { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; background: white; padding: 20px; border-radius: var(--radius-md); border: 0.5px solid var(--color-grey-200); margin-bottom: 12px; }
+.grid-col { height: 36px; background: rgba(0,0,0,0.04); border-radius: 3px; }
+.grid-col.hi { background: rgba(0,0,0,0.10); }
+
+/* ═══ LANDING WIREFRAMES ═══ */
+.lp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.lp-frame { background: white; border-radius: 10px; overflow: hidden; border: 0.5px solid var(--color-grey-200); }
+.lp-frame-bar { height: 30px; background: var(--color-grey-100); display: flex; align-items: center; padding: 0 12px; gap: 6px; border-bottom: 0.5px solid var(--color-grey-200); }
+.lp-dot { width: 10px; height: 10px; border-radius: 50%; }
+.lp-body { padding: 0; }
+.lp-hero { padding: 18px 16px; border-bottom: 0.5px solid var(--color-grey-100); }
+.lp-nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.lp-nav-logo { display: flex; align-items: center; gap: 5px; }
+.lp-nav-logo span { font-size: 10px; font-weight: 500; }
+.lp-nav-links { display: flex; gap: 10px; }
+.lp-nav-link { font-size: 8px; color: var(--color-grey-400); }
+.lp-nav-btn { font-size: 8px; background: var(--color-black); color: white; padding: 4px 9px; border-radius: 3px; }
+.lp-hero-tag { font-size: 8px; color: var(--color-grey-400); font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 7px; }
+.lp-hero-h { font-size: 15px; font-weight: 500; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 8px; }
+.lp-hero-p { font-size: 9px; color: var(--color-grey-600); line-height: 1.6; margin-bottom: 12px; }
+.lp-hero-btns { display: flex; gap: 6px; }
+.lp-btn-p { font-size: 8px; background: var(--color-black); color: white; padding: 6px 12px; border-radius: 3px; }
+.lp-btn-s { font-size: 8px; border: 1px solid var(--color-grey-200); padding: 6px 12px; border-radius: 3px; color: var(--color-grey-600); }
+.lp-hero-img { background: var(--color-grey-100); border-radius: 6px; height: 56px; display: flex; align-items: center; justify-content: center; margin-top: 12px; }
+.lp-section { padding: 14px 16px; border-bottom: 0.5px solid var(--color-grey-100); }
+.lp-sec-label { font-size: 8px; color: var(--color-grey-400); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.lp-cards-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.lp-mini-card { background: var(--color-grey-100); border-radius: 4px; padding: 8px; }
+.lp-mini-card-icon { width: 16px; height: 16px; border-radius: 3px; background: var(--color-grey-200); margin-bottom: 6px; }
+.lp-mini-card-t { font-size: 8px; font-weight: 500; margin-bottom: 3px; }
+.lp-mini-card-p { font-size: 7px; color: var(--color-grey-400); line-height: 1.4; }
+.lp-form-block { display: flex; flex-direction: column; gap: 6px; }
+.lp-input { height: 20px; background: var(--color-grey-100); border-radius: 3px; }
+.lp-submit { height: 20px; background: var(--color-black); border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+.lp-submit span { font-size: 8px; color: white; font-weight: 500; }
+.lp-testimonial { background: var(--color-grey-100); border-radius: 5px; padding: 10px; }
+.lp-quote { font-size: 8px; color: var(--color-grey-600); line-height: 1.6; margin-bottom: 6px; font-style: italic; }
+.lp-author { display: flex; align-items: center; gap: 6px; }
+.lp-avatar { width: 16px; height: 16px; border-radius: 50%; background: var(--color-grey-200); }
+.lp-author-info { font-size: 8px; color: var(--color-grey-400); }
+.lp-steps { display: flex; flex-direction: column; gap: 6px; }
+.lp-step { display: flex; align-items: flex-start; gap: 7px; }
+.lp-step-num { width: 16px; height: 16px; border-radius: 50%; background: var(--color-black); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.lp-step-num span { font-size: 7px; color: white; font-weight: 500; }
+.lp-step-text { font-size: 8px; color: var(--color-grey-600); line-height: 1.5; }
+.lp-footer { padding: 12px 16px; background: var(--color-black); }
+.lp-footer-logo { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+.lp-footer-logo span { font-size: 10px; font-weight: 500; color: white; }
+.lp-footer-links { display: flex; gap: 10px; }
+.lp-footer-link { font-size: 8px; color: var(--color-grey-600); }
+.lp-title { font-size: 11px; color: var(--color-grey-400); font-family: var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; padding: 10px; border-top: 0.5px solid var(--color-grey-200); }
+
+/* ═══ RADIUS & SHADOWS ═══ */
+.radius-grid { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+.radius-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.radius-box { width: 60px; height: 60px; background: var(--color-black); }
+.radius-label { font-size: 10px; font-family: var(--font-mono); color: var(--color-grey-600); }
+.radius-desc { font-size: 9px; color: var(--color-grey-400); }
+.shadow-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.shadow-box { width: 80px; height: 56px; background: white; border-radius: var(--radius-md); }
+
+/* ═══ CODE BLOCK ═══ */
+.code-block { background: var(--color-black); border-radius: var(--radius-md); padding: 24px; overflow-x: auto; }
+.code-block pre { font-family: var(--font-mono); font-size: 12px; color: #ccc; line-height: 1.8; }
+
+/* ═══ ARCHITECTURE ═══ */
+.arch-row { display: flex; gap: 0; overflow-x: auto; }
+.arch-step { padding: 12px 18px; font-size: 11px; font-family: var(--font-mono); white-space: nowrap; }
+.arch-step.dark { background: var(--color-black); color: white; }
+.arch-step.light { background: var(--color-grey-100); color: var(--color-grey-600); border-top: 0.5px solid var(--color-grey-200); border-bottom: 0.5px solid var(--color-grey-200); }
+.arch-divider { width: 1px; background: var(--color-grey-200); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-logo">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <circle cx="13" cy="13" r="11" stroke="white" stroke-width="2.2"/>
+        </svg>
+        <span>estudioseijo.</span>
+      </div>
+      <div style="font-size:11px;color:#555;font-family:'DM Mono',monospace;margin-top:6px;">Design System & UI Kit — v1.0 · Landing Pages de Servicios · Junio 2026</div>
+    </div>
+    <div class="header-meta">
+      32 iconos SVG incluidos<br>
+      6 patrones geométricos<br>
+      Componentes UI completos<br>
+      3 wireframes de landing
+    </div>
+  </div>
+
+
+  <!-- ══════════════ DESIGN TOKENS ══════════════ -->
+  <div class="section">
+    <div class="section-title">01 · Paleta de color</div>
+    <div class="color-grid">
+      <div class="color-chip"><div class="color-swatch" style="background:#0A0A0A;"></div><div class="color-info"><div class="color-name">Black</div><div class="color-hex">#0A0A0A — --color-black</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#FAFAF8;border-bottom:0.5px solid #eee;"></div><div class="color-info"><div class="color-name">White</div><div class="color-hex">#FAFAF8 — --color-white</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#EDEDE9;"></div><div class="color-info"><div class="color-name">Background</div><div class="color-hex">#EDEDE9 — --color-bg</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#F2F2F0;"></div><div class="color-info"><div class="color-name">Grey 100</div><div class="color-hex">#F2F2F0</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#E0E0DC;"></div><div class="color-info"><div class="color-name">Grey 200</div><div class="color-hex">#E0E0DC</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#A0A09A;"></div><div class="color-info"><div class="color-name">Grey 400</div><div class="color-hex">#A0A09A</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#5A5A55;"></div><div class="color-info"><div class="color-name">Grey 600</div><div class="color-hex">#5A5A55</div></div></div>
+      <div class="color-chip"><div class="color-swatch" style="background:#2A2A28;"></div><div class="color-info"><div class="color-name">Grey 800</div><div class="color-hex">#2A2A28</div></div></div>
+    </div>
+
+  <!-- ══════════════ USOS DE COLORES FUNCIONALES ══════════════ -->
+  <div class="section" id="usage-examples">
+    <div class="section-title">02b · Usos de colores funcionales — ejemplos en contexto</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- CTA -->
+      <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">CTA — Llamada a la acción · #E07A3A</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button style="background:#E07A3A;color:white;border:none;padding:11px 20px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-align:left;">Solicitar presupuesto →</button>
+          <button style="background:#E07A3A;color:white;border:none;padding:11px 20px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-align:left;">Empezar proyecto →</button>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#FDF0E8;border-radius:6px;border-left:3px solid #C4856A;">
+            <span style="font-size:12px;color:#E07A3A;font-weight:500;">🔥 Oferta limitada — 3 plazas disponibles este mes</span>
+          </div>
+          <div style="background:#E07A3A;border-radius:8px;padding:16px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:white;font-size:13px;font-weight:500;">¿Hablamos esta semana?</span>
+            <span style="background:white;color:#E07A3A;font-size:11px;font-weight:500;padding:6px 12px;border-radius:4px;">Agendar →</span>
+          </div>
+          <p style="font-size:11px;color:var(--color-grey-400);font-family:'DM Mono',monospace;">Usos: botón hero principal · botón submit · banners CTA · nav pill</p>
+        </div>
+      </div>
+
+      <!-- OK -->
+      <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">OK / Success — Confirmación · #85AFA0</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#EBF4F1;border-radius:6px;border-left:3px solid #85AFA0;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#85AFA0" stroke-width="1.5"/><polyline points="5,8 7,10 11,6" stroke="#85AFA0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:#85AFA0;font-weight:500;">Tu mensaje ha sido enviado correctamente</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#EBF4F1;border-radius:6px;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#85AFA0" stroke-width="1.5"/><polyline points="4,7 6,9 10,5" stroke="#85AFA0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:#85AFA0;">Pago procesado · Ref. 2026-041</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#85AFA0;"></div>
+            <span style="font-size:12px;color:#85AFA0;font-weight:500;">Servicio activo</span>
+          </div>
+          <div style="border:1.5px solid #85AFA0;border-radius:4px;padding:8px 14px;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#85AFA0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:#85AFA0;font-weight:500;">Confirmado</span>
+          </div>
+          <p style="font-size:11px;color:var(--color-grey-400);font-family:'DM Mono',monospace;">Usos: toast de éxito · estado activo · validación de formulario · confirmación de pago</p>
+        </div>
+      </div>
+
+      <!-- NOOK -->
+      <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Nook / Error — Destructivo · #BF9090</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#F5ECEC;border-radius:6px;border-left:3px solid #BF9090;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#BF9090" stroke-width="1.5"/><line x1="8" y1="5" x2="8" y2="9" stroke="#BF9090" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.8" fill="#BF9090"/></svg>
+            <span style="font-size:12px;color:#BF9090;font-weight:500;">El email introducido no es válido</span>
+          </div>
+          <div style="border:1.5px solid #BF9090;border-radius:4px;padding:10px 14px;">
+            <input style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--color-black);width:100%;background:transparent;" value="nombre@" placeholder=""/>
+          </div>
+          <button style="background:#F5ECEC;color:#BF9090;border:1.5px solid #BF9090;padding:9px 16px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:left;">Eliminar proyecto</button>
+          <p style="font-size:11px;color:var(--color-grey-400);font-family:'DM Mono',monospace;">Usos: errores de formulario · acciones destructivas · validaciones fallidas · campos inválidos</p>
+        </div>
+      </div>
+
+      <!-- ALERT + INFO -->
+      <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Alert + Info · #C8B080 · #8AAEC8</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:#F6F1E9;border-radius:6px;border-left:3px solid #C8B080;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><path d="M8 2 L14 13 L2 13 Z" stroke="#C8B080" stroke-width="1.5" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="#C8B080" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r="0.6" fill="#C8B080"/></svg>
+            <div><p style="font-size:12px;color:#C8B080;font-weight:500;margin-bottom:2px;">Acción requerida</p><p style="font-size:11px;color:#C8B080;">Revisa los datos antes de publicar tu landing.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:#EAF0F6;border-radius:6px;border-left:3px solid #8AAEC8;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="7" stroke="#8AAEC8" stroke-width="1.5"/><line x1="8" y1="7.5" x2="8" y2="11" stroke="#8AAEC8" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="5.5" r="0.8" fill="#8AAEC8"/></svg>
+            <div><p style="font-size:12px;color:#8AAEC8;font-weight:500;margin-bottom:2px;">Nota informativa</p><p style="font-size:11px;color:#8AAEC8;">Los cambios tardan 24h en propagarse al CDN.</p></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;padding:10px 12px;background:#F6F1E9;border-radius:6px;text-align:center;"><span style="font-size:11px;color:#C8B080;font-weight:500;">⚠ En revisión</span></div>
+            <div style="flex:1;padding:10px 12px;background:#EAF0F6;border-radius:6px;text-align:center;"><span style="font-size:11px;color:#8AAEC8;font-weight:500;">ℹ Pendiente</span></div>
+          </div>
+          <p style="font-size:11px;color:var(--color-grey-400);font-family:'DM Mono',monospace;">Alert: revisiones, estados en proceso · Info: notas, ayudas contextuales, tooltips</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════ TIPOGRAFÍA ══════════════ -->
+  <div class="section">
+    <div class="section-title">02 · Escala tipográfica — DM Sans + DM Mono</div>
+    <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+      <div class="type-row"><div class="type-label">display / h1</div><div style="font-size:48px;font-weight:500;letter-spacing:-0.03em;">Aa</div><div class="type-meta">DM Sans 500 · 48px · -0.03em · lh 1.1</div></div>
+      <div class="type-row"><div class="type-label">heading / h2</div><div style="font-size:36px;font-weight:500;letter-spacing:-0.02em;">Aa</div><div class="type-meta">DM Sans 500 · 36px · -0.02em · lh 1.2</div></div>
+      <div class="type-row"><div class="type-label">subheading / h3</div><div style="font-size:24px;font-weight:500;letter-spacing:-0.015em;">Aa</div><div class="type-meta">DM Sans 500 · 24px · -0.015em · lh 1.3</div></div>
+      <div class="type-row"><div class="type-label">title / h4</div><div style="font-size:18px;font-weight:500;">Aa</div><div class="type-meta">DM Sans 500 · 18px · lh 1.4</div></div>
+      <div class="type-row"><div class="type-label">body-lg</div><div style="font-size:16px;color:var(--color-grey-600);">Texto de cuerpo grande para intros y descripciones principales.</div><div class="type-meta">DM Sans 400 · 16px · lh 1.65</div></div>
+      <div class="type-row"><div class="type-label">body</div><div style="font-size:14px;color:var(--color-grey-600);">Texto de cuerpo para contenido general y descripciones de sección.</div><div class="type-meta">DM Sans 400 · 14px · lh 1.6</div></div>
+      <div class="type-row"><div class="type-label">body-sm</div><div style="font-size:12px;color:var(--color-grey-600);">Texto secundario, pies de foto, notas y metadata.</div><div class="type-meta">DM Sans 400 · 12px · lh 1.55</div></div>
+      <div class="type-row"><div class="type-label">label / overline</div><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-grey-400);">ETIQUETA DE SECCIÓN</div><div class="type-meta">DM Sans · 11px · 0.08em · uppercase</div></div>
+      <div class="type-row"><div class="type-label">mono</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--color-grey-600);">ref-2026 · token-value · #HEXCODE</div><div class="type-meta">DM Mono 400 · 12px · lh 1.5</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ESPACIADO ══════════════ -->
+  <div class="section">
+    <div class="section-title">03 · Espaciado — escala 4px base</div>
+    <div class="spacing-grid">
+      <div class="spacing-row"><div class="spacing-token">4px</div><div class="spacing-bar" style="width:4px"></div><div class="spacing-name">--space-1</div></div>
+      <div class="spacing-row"><div class="spacing-token">8px</div><div class="spacing-bar" style="width:8px"></div><div class="spacing-name">--space-2</div></div>
+      <div class="spacing-row"><div class="spacing-token">12px</div><div class="spacing-bar" style="width:12px"></div><div class="spacing-name">--space-3</div></div>
+      <div class="spacing-row"><div class="spacing-token">16px</div><div class="spacing-bar" style="width:16px"></div><div class="spacing-name">--space-4</div></div>
+      <div class="spacing-row"><div class="spacing-token">24px</div><div class="spacing-bar" style="width:24px"></div><div class="spacing-name">--space-6</div></div>
+      <div class="spacing-row"><div class="spacing-token">32px</div><div class="spacing-bar" style="width:32px"></div><div class="spacing-name">--space-8</div></div>
+      <div class="spacing-row"><div class="spacing-token">48px</div><div class="spacing-bar" style="width:48px"></div><div class="spacing-name">--space-12</div></div>
+      <div class="spacing-row"><div class="spacing-token">64px</div><div class="spacing-bar" style="width:64px"></div><div class="spacing-name">--space-16</div></div>
+      <div class="spacing-row"><div class="spacing-token">80px</div><div class="spacing-bar" style="width:80px"></div><div class="spacing-name">--space-20</div></div>
+      <div class="spacing-row"><div class="spacing-token">120px</div><div class="spacing-bar" style="width:120px"></div><div class="spacing-name">--space-30</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ GRID ══════════════ -->
+  <div class="section">
+    <div class="section-title">04 · Grid — 12 columnas · max 1200px · gutter 24px</div>
+    <div class="grid-vis">
+      <div class="grid-col hi"></div><div class="grid-col hi"></div>
+      <div class="grid-col"></div><div class="grid-col"></div>
+      <div class="grid-col"></div><div class="grid-col"></div>
+      <div class="grid-col"></div><div class="grid-col"></div>
+      <div class="grid-col hi"></div><div class="grid-col hi"></div>
+      <div class="grid-col hi"></div><div class="grid-col hi"></div>
+    </div>
+    <div style="display:flex;gap:24px;font-size:12px;color:var(--color-grey-600);">
+      <span>Desktop: 12 cols · gutter 24px · margin 48px</span>
+      <span>Tablet: 8 cols · gutter 16px · margin 24px</span>
+      <span>Mobile: 4 cols · gutter 12px · margin 16px</span>
+    </div>
+  </div>
+
+  <!-- ══════════════ BORDER RADIUS & SHADOWS ══════════════ -->
+  <div class="section">
+    <div class="section-title">05 · Border radius & sombras</div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;">
+      <div class="radius-grid">
+        <div class="radius-item"><div class="radius-box" style="border-radius:4px;"></div><div class="radius-label">--radius-sm</div><div class="radius-desc">4px · btns, inputs</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:8px;"></div><div class="radius-label">--radius-md</div><div class="radius-desc">8px · cards, iconos</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:12px;"></div><div class="radius-label">--radius-lg</div><div class="radius-desc">12px · modales</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:50%;"></div><div class="radius-label">--radius-full</div><div class="radius-desc">full · avatares</div></div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:flex-end;margin-top:8px;">
+        <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 1px 3px rgba(0,0,0,0.08);"></div><div class="radius-label">--shadow-sm</div></div>
+        <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 4px 16px rgba(0,0,0,0.10);"></div><div class="radius-label">--shadow-md</div></div>
+        <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 12px 40px rgba(0,0,0,0.14);"></div><div class="radius-label">--shadow-lg</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ NAVEGACIÓN ══════════════ -->
+  <div class="section">
+    <div class="section-title">06 · Componente — Navegación</div>
+    <div class="nav-comp">
+      <div class="nav-logo">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9.5" stroke="black" stroke-width="2"/></svg>
+        <span>estudioseijo.</span>
+      </div>
+      <div class="nav-links">
+        <span class="nav-link" style="color:var(--color-black);font-weight:500;">servicios</span>
+        <span class="nav-link">proyectos</span>
+        <span class="nav-link">nosotros</span>
+        <span class="nav-link">blog</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="btn btn-ghost btn-sm">contacto</a>
+        <a href="#" class="btn btn-primary btn-sm">empezar →</a>
+      </div>
+    </div>
+    <div class="nav-comp" style="background:var(--color-black);">
+      <div class="nav-logo">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9.5" stroke="white" stroke-width="2"/></svg>
+        <span style="color:white;">estudioseijo.</span>
+      </div>
+      <div class="nav-links">
+        <span class="nav-link" style="color:#555;">servicios</span>
+        <span class="nav-link" style="color:#555;">proyectos</span>
+        <span class="nav-link" style="color:#555;">nosotros</span>
+      </div>
+      <a href="#" class="btn btn-sm" style="background:white;color:black;">empezar →</a>
+    </div>
+  </div>
+
+  <!-- ══════════════ BOTONES ══════════════ -->
+  <div class="section">
+    <div class="section-title">07 · Componentes — Botones</div>
+    <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);">
+      <div class="btn-row">
+        <a href="#" class="btn btn-primary">Empezar proyecto →</a>
+        <a href="#" class="btn btn-cta">Solicitar demo →</a>
+        <a href="#" class="btn btn-secondary">Ver servicios</a>
+        <a href="#" class="btn btn-ghost">Cancelar</a>
+      </div>
+      <div class="btn-row">
+        <a href="#" class="btn btn-primary btn-sm">Primario sm</a>
+        <a href="#" class="btn btn-secondary btn-sm">Secundario sm</a>
+        <a href="#" class="btn btn-ghost btn-sm">Ghost sm</a>
+      </div>
+      <div class="btn-row">
+        <a href="#" class="btn btn-primary btn-lg">Solicitar demo →</a>
+        <a href="#" class="btn btn-secondary btn-lg">Ver portafolio</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ TAGS ══════════════ -->
+  <div class="section">
+    <div class="section-title">08 · Componentes — Tags / Etiquetas</div>
+    <div style="background:white;border-radius:10px;padding:20px;border:0.5px solid var(--color-grey-200);">
+      <div class="tags-row">
+        <span class="tag tag-default">ecommerce</span>
+        <span class="tag tag-default">seo</span>
+        <span class="tag tag-default">campañas</span>
+        <span class="tag tag-dark">nuevo</span>
+        <span class="tag tag-dark">ia</span>
+        <span class="tag tag-dark">destacado</span>
+        <span class="tag tag-outline">consultoría</span>
+        <span class="tag tag-outline">web</span>
+        <span class="tag tag-outline">api</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CARDS ══════════════ -->
+  <div class="section">
+    <div class="section-title">09 · Componentes — Cards de servicio</div>
+    <div class="comp-grid">
+
+      <div class="service-card">
+        <div class="service-card-icon">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="black" stroke-width="1.8"/><polyline points="7,18 11,13 15,16 21,10" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="18,10 21,10 21,13" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Estrategia y Marketing Digital</h3>
+        <p>Definimos la hoja de ruta digital de tu negocio: desde el análisis hasta el plan de acción con métricas claras.</p>
+        <div class="service-card-cta">Ver servicio →</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-icon">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><rect x="3" y="5" width="22" height="15" rx="2" stroke="black" stroke-width="1.8"/><line x1="3" y1="9" x2="25" y2="9" stroke="black" stroke-width="1.5"/><circle cx="6" cy="7" r="1" fill="black"/><circle cx="9.5" cy="7" r="1" fill="black"/><circle cx="13" cy="7" r="1" fill="black"/></svg>
+        </div>
+        <h3>Desarrollo web</h3>
+        <p>Webs y tiendas online centradas en conversión, rendimiento y escalabilidad. Desde Webflow hasta custom.</p>
+        <div class="service-card-cta">Ver proyectos →</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-icon">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="5" stroke="black" stroke-width="1.8"/><circle cx="14" cy="4" r="2" stroke="black" stroke-width="1.5"/><circle cx="14" cy="24" r="2" stroke="black" stroke-width="1.5"/><circle cx="4" cy="14" r="2" stroke="black" stroke-width="1.5"/><circle cx="24" cy="14" r="2" stroke="black" stroke-width="1.5"/><line x1="14" y1="6" x2="14" y2="9" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="19" x2="14" y2="22" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="6" y1="14" x2="9" y2="14" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="19" y1="14" x2="22" y2="14" stroke="black" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Inteligencia Artificial</h3>
+        <p>Implementación de soluciones IA adaptadas a tu modelo de negocio: automatización, analítica y contenido.</p>
+        <div class="service-card-cta">Ver casos de uso →</div>
+      </div>
+
+      <div class="service-card" style="background:var(--color-black);">
+        <div class="service-card-icon" style="border-color:#333;">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/><path d="M14 20 L14 10" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M10 14 L14 10 L18 14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 style="color:white;">Lanzamiento de Negocios Digitales</h3>
+        <p style="color:#555;">Acompañamos el lanzamiento completo de negocios digitales: desde la validación hasta la tracción inicial.</p>
+        <div class="service-card-cta" style="color:white;">Saber más →</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ FORMULARIO ══════════════ -->
+  <div class="section">
+    <div class="section-title">10 · Componentes — Formulario de contacto</div>
+    <div style="background:white;border-radius:10px;padding:24px;border:0.5px solid var(--color-grey-200);max-width:480px;">
+      <div class="input-wrap"><label class="input-label">Nombre</label><input class="input-field" type="text" placeholder="Tu nombre completo"/></div>
+      <div class="input-wrap"><label class="input-label">Email</label><input class="input-field" type="email" placeholder="hola@empresa.com"/></div>
+      <div class="input-wrap"><label class="input-label">Empresa</label><input class="input-field" type="text" placeholder="Nombre de tu empresa"/></div>
+      <div class="input-wrap">
+        <label class="input-label">Servicio de interés</label>
+        <select class="input-field">
+          <option>Seleccionar servicio</option>
+          <option>Desarrollo web / Ecommerce</option>
+          <option>SEO y campañas</option>
+          <option>Consultoría digital</option>
+          <option>Inteligencia artificial</option>
+        </select>
+      </div>
+      <div class="input-wrap"><label class="input-label">Mensaje</label><textarea class="input-field" rows="3" placeholder="Cuéntanos tu proyecto..."></textarea></div>
+      <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Enviar solicitud →</a>
+    </div>
+  </div>
+
+  <!-- ══════════════ WIREFRAMES ══════════════ -->
+  <div class="section">
+    <div class="section-title">11 · Wireframes — Landing pages de servicio</div>
+    <div class="lp-grid">
+
+      <!-- LP 1 -->
+      <div>
+        <div class="lp-frame">
+          <div class="lp-frame-bar">
+            <div class="lp-dot" style="background:#FF5F57;"></div>
+            <div class="lp-dot" style="background:#FEBC2E;"></div>
+            <div class="lp-dot" style="background:#28C840;"></div>
+          </div>
+          <div class="lp-body">
+            <div class="lp-hero">
+              <div class="lp-nav-bar">
+                <div class="lp-nav-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="black" stroke-width="1.2"/></svg><span>estudioseijo.</span></div>
+                <div class="lp-nav-links"><span class="lp-nav-link">servicios</span><span class="lp-nav-link">proyectos</span></div>
+                <span class="lp-nav-btn" style="background:#E07A3A;">contacto</span>
+              </div>
+              <div class="lp-hero-tag">Desarrollo Web · E-commerce</div>
+              <div class="lp-hero-h">Tu web que<br>vende de verdad.</div>
+              <div class="lp-hero-p">Diseñamos y desarrollamos webs y tiendas online centradas en conversión, rendimiento y escalabilidad.</div>
+              <div class="lp-hero-btns"><span class="lp-btn-p" style="background:#E07A3A;">Ver proyectos</span><span class="lp-btn-s">Solicitar demo</span></div>
+              <div class="lp-hero-img"><svg width="36" height="36" viewBox="0 0 28 28" fill="none" opacity="0.15"><rect x="3" y="5" width="22" height="15" rx="2" stroke="black" stroke-width="1.8"/><line x1="3" y1="9" x2="25" y2="9" stroke="black" stroke-width="1.5"/><circle cx="6" cy="7" r="1" fill="black"/></svg></div>
+            </div>
+            <div class="lp-section"><div class="lp-sec-label">Qué incluye</div><div class="lp-cards-row"><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">Diseño UX/UI</div><div class="lp-mini-card-p">Orientado a conversión</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">Desarrollo</div><div class="lp-mini-card-p">Webflow / custom</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">SEO técnico</div><div class="lp-mini-card-p">Incluido en todos</div></div></div></div>
+            <div class="lp-section"><div class="lp-sec-label">Proceso</div><div class="lp-steps"><div class="lp-step"><div class="lp-step-num"><span>1</span></div><div class="lp-step-text">Briefing y estrategia y mkt</div></div><div class="lp-step"><div class="lp-step-num"><span>2</span></div><div class="lp-step-text">Diseño en Figma</div></div><div class="lp-step"><div class="lp-step-num"><span>3</span></div><div class="lp-step-text">Desarrollo y testing</div></div><div class="lp-step"><div class="lp-step-num"><span>4</span></div><div class="lp-step-text">Lanzamiento de Negocios Digitales</div></div></div></div>
+            <div class="lp-section"><div class="lp-testimonial"><div class="lp-quote">"Triplicamos las ventas online en el primer trimestre."</div><div class="lp-author"><div class="lp-avatar"></div><div class="lp-author-info">CEO · ecommerce</div></div></div></div>
+            <div class="lp-section"><div class="lp-sec-label">Contacto</div><div class="lp-form-block"><div class="lp-input"></div><div class="lp-input"></div><div class="lp-submit" style="background:#E07A3A;"><span>Solicitar presupuesto →</span></div></div></div>
+            <div class="lp-footer"><div class="lp-footer-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="white" stroke-width="1.2"/></svg><span>estudioseijo.</span></div><div class="lp-footer-links"><span class="lp-footer-link">Privacidad</span><span class="lp-footer-link">Legal</span></div></div>
+          </div>
+        </div>
+        <div class="lp-title">LP · Web & Ecommerce</div>
+      </div>
+
+      <!-- LP 2 -->
+      <div>
+        <div class="lp-frame">
+          <div class="lp-frame-bar">
+            <div class="lp-dot" style="background:#FF5F57;"></div>
+            <div class="lp-dot" style="background:#FEBC2E;"></div>
+            <div class="lp-dot" style="background:#28C840;"></div>
+          </div>
+          <div class="lp-body">
+            <div class="lp-hero" style="background:#0A0A0A;">
+              <div class="lp-nav-bar">
+                <div class="lp-nav-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="white" stroke-width="1.2"/></svg><span style="color:white;">estudioseijo.</span></div>
+                <div class="lp-nav-links"><span class="lp-nav-link" style="color:#444;">servicios</span></div>
+                <span class="lp-nav-btn" style="background:#E07A3A;color:white;">contacto</span>
+              </div>
+              <div class="lp-hero-tag" style="color:#444;">SEO · Campañas · Growth</div>
+              <div class="lp-hero-h" style="color:white;">Visibilidad digital<br>que convierte.</div>
+              <div class="lp-hero-p" style="color:#555;">SEO orgánico, campañas de paid y estrategias de growth.</div>
+              <div class="lp-hero-btns"><span class="lp-btn-p" style="background:#E07A3A;color:white;">Auditoría gratis</span><span class="lp-btn-s" style="border-color:#333;color:#666;">Ver casos</span></div>
+              <div class="lp-hero-img" style="background:#111;"><svg width="60" height="20" viewBox="0 0 100 30" fill="none"><polyline points="0,25 20,18 40,10 60,15 80,5 100,8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></svg></div>
+            </div>
+            <div class="lp-section"><div class="lp-sec-label">Métricas</div><div class="lp-cards-row"><div class="lp-mini-card"><div class="lp-mini-card-icon" style="background:#E8F5E9;"></div><div class="lp-mini-card-t">+120%</div><div class="lp-mini-card-p">tráfico orgánico</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon" style="background:#E3F2FD;"></div><div class="lp-mini-card-t">3x ROAS</div><div class="lp-mini-card-p">campañas paid</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon" style="background:#FFF3E0;"></div><div class="lp-mini-card-t">-40%</div><div class="lp-mini-card-p">coste por lead</div></div></div></div>
+            <div class="lp-section"><div class="lp-testimonial"><div class="lp-quote">"Del puesto 40 al top 3 en Google en 4 meses."</div><div class="lp-author"><div class="lp-avatar"></div><div class="lp-author-info">Mkt Director · SaaS B2B</div></div></div></div>
+            <div class="lp-section"><div class="lp-sec-label">Auditoría gratuita</div><div class="lp-form-block"><div class="lp-input"></div><div class="lp-input"></div><div class="lp-submit" style="background:#E07A3A;"><span>Quiero mi auditoría →</span></div></div></div>
+            <div class="lp-footer"><div class="lp-footer-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="white" stroke-width="1.2"/></svg><span>estudioseijo.</span></div><div class="lp-footer-links"><span class="lp-footer-link">Privacidad</span></div></div>
+          </div>
+        </div>
+        <div class="lp-title">LP · SEO & Campañas</div>
+      </div>
+
+      <!-- LP 3 -->
+      <div>
+        <div class="lp-frame">
+          <div class="lp-frame-bar">
+            <div class="lp-dot" style="background:#FF5F57;"></div>
+            <div class="lp-dot" style="background:#FEBC2E;"></div>
+            <div class="lp-dot" style="background:#28C840;"></div>
+          </div>
+          <div class="lp-body">
+            <div class="lp-hero">
+              <div class="lp-nav-bar">
+                <div class="lp-nav-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="black" stroke-width="1.2"/></svg><span>estudioseijo.</span></div>
+                <span class="lp-nav-btn" style="background:#E07A3A;">agenda llamada</span>
+              </div>
+              <div class="lp-hero-tag">Consultoría · IA · Transformación</div>
+              <div class="lp-hero-h">IA aplicada<br>a tu negocio.</div>
+              <div class="lp-hero-p">Diagnóstico, estrategia e implementación de soluciones de inteligencia artificial.</div>
+              <div class="lp-hero-btns"><span class="lp-btn-p" style="background:#E07A3A;">Agendar llamada</span><span class="lp-btn-s">Ver casos</span></div>
+              <div class="lp-hero-img"><svg width="40" height="40" viewBox="0 0 28 28" fill="none" opacity="0.12"><circle cx="14" cy="14" r="5" stroke="black" stroke-width="1.8"/><circle cx="14" cy="4" r="2" stroke="black" stroke-width="1.5"/><circle cx="14" cy="24" r="2" stroke="black" stroke-width="1.5"/><circle cx="4" cy="14" r="2" stroke="black" stroke-width="1.5"/><circle cx="24" cy="14" r="2" stroke="black" stroke-width="1.5"/><line x1="14" y1="6" x2="14" y2="9" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="19" x2="14" y2="22" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="6" y1="14" x2="9" y2="14" stroke="black" stroke-width="1.4" stroke-linecap="round"/><line x1="19" y1="14" x2="22" y2="14" stroke="black" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="lp-section"><div class="lp-sec-label">Casos de uso</div><div class="lp-cards-row"><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">Automatización</div><div class="lp-mini-card-p">Flujos con IA</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">Analítica</div><div class="lp-mini-card-p">Dashboards IA</div></div><div class="lp-mini-card"><div class="lp-mini-card-icon"></div><div class="lp-mini-card-t">Contenido</div><div class="lp-mini-card-p">Generación auto</div></div></div></div>
+            <div class="lp-section"><div class="lp-sec-label">Metodología</div><div class="lp-steps"><div class="lp-step"><div class="lp-step-num"><span>1</span></div><div class="lp-step-text">Diagnóstico de madurez digital</div></div><div class="lp-step"><div class="lp-step-num"><span>2</span></div><div class="lp-step-text">Hoja de ruta y herramientas</div></div><div class="lp-step"><div class="lp-step-num"><span>3</span></div><div class="lp-step-text">Implementación y formación</div></div></div></div>
+            <div class="lp-section"><div class="lp-testimonial"><div class="lp-quote">"Automatizamos el 60% de los procesos en 6 semanas."</div><div class="lp-author"><div class="lp-avatar"></div><div class="lp-author-info">COO · startup fintech</div></div></div></div>
+            <div class="lp-section"><div class="lp-sec-label">Agenda llamada</div><div class="lp-form-block"><div class="lp-input"></div><div class="lp-input"></div><div class="lp-submit" style="background:#E07A3A;"><span>Reservar llamada →</span></div></div></div>
+            <div class="lp-footer"><div class="lp-footer-logo"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="white" stroke-width="1.2"/></svg><span>estudioseijo.</span></div><div class="lp-footer-links"><span class="lp-footer-link">Privacidad</span></div></div>
+          </div>
+        </div>
+        <div class="lp-title">LP · Consultoría & IA</div>
+      </div>
+
+    </div>
+
+    <!-- ARQUITECTURA -->
+    <div style="margin-top:24px;background:white;border-radius:10px;padding:20px;border:0.5px solid var(--color-grey-200);">
+      <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Arquitectura de secciones — común a todas las landings</div>
+      <div class="arch-row">
+        <div class="arch-step dark" style="border-radius:6px 0 0 6px;">01 · Nav</div><div class="arch-divider"></div>
+        <div class="arch-step light">02 · Hero</div><div class="arch-divider"></div>
+        <div class="arch-step light">03 · Propuesta de valor</div><div class="arch-divider"></div>
+        <div class="arch-step light">04 · Servicios / Features</div><div class="arch-divider"></div>
+        <div class="arch-step light">05 · Proceso</div><div class="arch-divider"></div>
+        <div class="arch-step light">06 · Social proof</div><div class="arch-divider"></div>
+        <div class="arch-step light">07 · CTA + Formulario</div><div class="arch-divider"></div>
+        <div class="arch-step dark" style="border-radius:0 6px 6px 0;">08 · Footer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CSS VARIABLES ══════════════ -->
+  <div class="section">
+    <div class="section-title">12 · Variables CSS — copiar en :root</div>
+    <div class="code-block">
+      <pre style="color:#ccc;line-height:1.8;"><span style="color:#666;">/* ── estudioseijo. Design System v1.0 ── */</span>
+<span style="color:#888;">:root</span> {
+  <span style="color:#7ec8e3;">--color-black</span>:     <span style="color:#ce9178;">#0A0A0A</span>;
+  <span style="color:#7ec8e3;">--color-white</span>:     <span style="color:#ce9178;">#FAFAF8</span>;
+  <span style="color:#7ec8e3;">--color-bg</span>:        <span style="color:#ce9178;">#EDEDE9</span>;
+  <span style="color:#7ec8e3;">--color-grey-100</span>:  <span style="color:#ce9178;">#F2F2F0</span>;
+  <span style="color:#7ec8e3;">--color-grey-200</span>:  <span style="color:#ce9178;">#E0E0DC</span>;
+  <span style="color:#7ec8e3;">--color-grey-400</span>:  <span style="color:#ce9178;">#A0A09A</span>;
+  <span style="color:#7ec8e3;">--color-grey-600</span>:  <span style="color:#ce9178;">#5A5A55</span>;
+  <span style="color:#7ec8e3;">--color-grey-800</span>:  <span style="color:#ce9178;">#2A2A28</span>;
+  <span style="color:#7ec8e3;">--font-sans</span>:       <span style="color:#ce9178;">'DM Sans', sans-serif</span>;
+  <span style="color:#7ec8e3;">--font-mono</span>:       <span style="color:#ce9178;">'DM Mono', monospace</span>;
+  <span style="color:#7ec8e3;">--text-display</span>:    <span style="color:#ce9178;">48px</span>;  <span style="color:#7ec8e3;">--text-h2</span>: <span style="color:#ce9178;">36px</span>;  <span style="color:#7ec8e3;">--text-h3</span>: <span style="color:#ce9178;">24px</span>;
+  <span style="color:#7ec8e3;">--text-body-lg</span>:    <span style="color:#ce9178;">16px</span>; <span style="color:#7ec8e3;">--text-body</span>: <span style="color:#ce9178;">14px</span>; <span style="color:#7ec8e3;">--text-sm</span>: <span style="color:#ce9178;">12px</span>;
+  <span style="color:#7ec8e3;">--space-1</span>: <span style="color:#ce9178;">4px</span>;  <span style="color:#7ec8e3;">--space-2</span>: <span style="color:#ce9178;">8px</span>;  <span style="color:#7ec8e3;">--space-4</span>: <span style="color:#ce9178;">16px</span>; <span style="color:#7ec8e3;">--space-6</span>: <span style="color:#ce9178;">24px</span>;
+  <span style="color:#7ec8e3;">--space-8</span>: <span style="color:#ce9178;">32px</span>; <span style="color:#7ec8e3;">--space-12</span>: <span style="color:#ce9178;">48px</span>; <span style="color:#7ec8e3;">--space-16</span>: <span style="color:#ce9178;">64px</span>; <span style="color:#7ec8e3;">--space-20</span>: <span style="color:#ce9178;">80px</span>;
+  <span style="color:#7ec8e3;">--radius-sm</span>: <span style="color:#ce9178;">4px</span>; <span style="color:#7ec8e3;">--radius-md</span>: <span style="color:#ce9178;">8px</span>; <span style="color:#7ec8e3;">--radius-lg</span>: <span style="color:#ce9178;">12px</span>; <span style="color:#7ec8e3;">--radius-full</span>: <span style="color:#ce9178;">9999px</span>;
+  <span style="color:#7ec8e3;">--shadow-sm</span>: <span style="color:#ce9178;">0 1px 3px rgba(0,0,0,0.08)</span>;
+  <span style="color:#7ec8e3;">--shadow-md</span>: <span style="color:#ce9178;">0 4px 16px rgba(0,0,0,0.10)</span>;
+  <span style="color:#7ec8e3;">--shadow-lg</span>: <span style="color:#ce9178;">0 12px 40px rgba(0,0,0,0.14)</span>;
+  <span style="color:#7ec8e3;">--transition-base</span>: <span style="color:#ce9178;">0.2s ease</span>;
+  <span style="color:#7ec8e3;">--grid-max</span>: <span style="color:#ce9178;">1200px</span>; <span style="color:#7ec8e3;">--grid-gutter</span>: <span style="color:#ce9178;">24px</span>; <span style="color:#7ec8e3;">--grid-margin</span>: <span style="color:#ce9178;">48px</span>;
+}</pre>
+    </div>
+    <div style="margin-top:16px;" class="code-block">
+      <pre style="color:#ccc;line-height:1.8;"><span style="color:#666;">/* ── Google Fonts — en &lt;head&gt; ── */</span>
+<span style="color:#7ec8e3;">&lt;link</span> rel=<span style="color:#ce9178;">"preconnect"</span> href=<span style="color:#ce9178;">"https://fonts.googleapis.com"</span><span style="color:#7ec8e3;">/&gt;</span>
+<span style="color:#7ec8e3;">&lt;link</span> href=<span style="color:#ce9178;">"https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@300;400;500&display=swap"</span> rel=<span style="color:#ce9178;">"stylesheet"</span><span style="color:#7ec8e3;">/&gt;</span></pre>
+    </div>
+  </div>
+
+
+  <!-- ══════════════ GUÍA DE USO ══════════════ -->
+  <div class="section">
+    <div class="section-title">13 · Cómo usar esta guía en Figma</div>
+    <div style="background:white;border-radius:10px;padding:28px 32px;border:0.5px solid var(--color-grey-200);line-height:1.8;">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+
+        <div>
+          <p style="font-size:14px;font-weight:500;margin-bottom:16px;letter-spacing:-0.01em;">Paso 1 — Configura las fuentes</p>
+          <p style="font-size:13px;color:var(--color-grey-600);margin-bottom:8px;">Instala <strong>DM Sans</strong> y <strong>DM Mono</strong> desde Google Fonts o a través del plugin de Google Fonts para Figma. Usa los pesos 300, 400, 500 y 700 de DM Sans, y 300, 400, 500 de DM Mono.</p>
+
+          <p style="font-size:14px;font-weight:500;margin:20px 0 12px;letter-spacing:-0.01em;">Paso 2 — Crea las Variables de color</p>
+          <p style="font-size:13px;color:var(--color-grey-600);margin-bottom:4px;">En Figma → panel derecho → Variables → crear colección <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--color-grey-100);padding:1px 5px;border-radius:3px;">estudioseijo/color</code>. Define dos grupos:</p>
+          <ul style="font-size:12px;color:var(--color-grey-600);padding-left:16px;margin-top:6px;line-height:2;">
+            <li><strong>Primitivos</strong>: black, white, bg, grey-100…800</li>
+            <li><strong>Funcionales</strong>: cta, ok, nook, alert, info (+ sus variantes light)</li>
+          </ul>
+
+          <p style="font-size:14px;font-weight:500;margin:20px 0 12px;letter-spacing:-0.01em;">Paso 3 — Define los Text Styles</p>
+          <p style="font-size:13px;color:var(--color-grey-600);">Crea un Text Style por cada fila de la escala tipográfica de la sección 02. Nómbralos con el prefijo <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--color-grey-100);padding:1px 5px;border-radius:3px;">seijo/</code>: seijo/display, seijo/h2, seijo/body, seijo/mono, etc.</p>
+        </div>
+
+        <div>
+          <p style="font-size:14px;font-weight:500;margin-bottom:16px;letter-spacing:-0.01em;">Paso 4 — Construye los componentes base</p>
+          <p style="font-size:13px;color:var(--color-grey-600);margin-bottom:4px;">Replica cada bloque de la sección 06–10 como un Figma Component. Orden recomendado:</p>
+          <ol style="font-size:12px;color:var(--color-grey-600);padding-left:16px;margin-top:6px;line-height:2.2;">
+            <li>Botones (Primary, CTA naranja, Secondary, Ghost, SM, LG)</li>
+            <li>Tags (Default, Dark, Outline)</li>
+            <li>Inputs + Select + Textarea</li>
+            <li>Nav (clara + oscura)</li>
+            <li>Cards de servicio (clara + oscura)</li>
+            <li>Testimonial, Form CTA</li>
+          </ol>
+
+          <p style="font-size:14px;font-weight:500;margin:20px 0 12px;letter-spacing:-0.01em;">Paso 5 — Monta los Frames de landing</p>
+          <p style="font-size:13px;color:var(--color-grey-600);">Crea un Frame de 1440×5000px por cada landing. Usa la arquitectura de secciones de la sección 11 como guía: Nav → Hero → Propuesta de valor → Servicios → Proceso → Social proof → CTA+Form → Footer.</p>
+
+          <p style="font-size:14px;font-weight:500;margin:20px 0 12px;letter-spacing:-0.01em;">Reglas de uso del color naranja CTA</p>
+          <p style="font-size:13px;color:var(--color-grey-600);">Usa <span style="color:#E07A3A;font-weight:500;">#C4856A</span> exclusivamente en: botón principal de hero, botón de formulario de envío, y nav CTA. Nunca más de un elemento naranja visible por sección. El resto de botones en negro o contorno.</p>
+        </div>
+
+      </div>
+
+      <div style="margin-top:28px;padding:20px 24px;background:var(--color-grey-100);border-radius:8px;">
+        <p style="font-size:11px;font-family:'DM Mono',monospace;color:var(--color-grey-400);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Convenciones de naming en Figma</p>
+        <div style="display:flex;gap:32px;flex-wrap:wrap;font-size:12px;color:var(--color-grey-600);">
+          <div><strong>Componentes:</strong> Seijo/Btn/Primary, Seijo/Card/Service, Seijo/Nav/Dark…</div>
+          <div><strong>Variables:</strong> color/cta, color/ok, color/grey-400…</div>
+          <div><strong>Text Styles:</strong> seijo/display, seijo/h2, seijo/body, seijo/mono…</div>
+          <div><strong>Frames LP:</strong> LP-Web, LP-SEO, LP-Consultoria, LP-IA…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
+</body>
+</html>
