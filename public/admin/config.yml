@@ -85,3 +85,18 @@ collections:
         default: false
         hint: Activado, el artículo se guarda pero no se publica en la web.
       - { name: body, label: Texto, widget: markdown }
+
+  - name: legal
+    label: Textos legales
+    label_singular: Texto legal
+    description: Aviso legal, privacidad y cookies. Desmarca «Pendiente» cuando el texto esté revisado.
+    files:
+      - { name: aviso-legal, label: Aviso legal, file: src/content/legal/aviso-legal.md, fields: &camposLegal [
+            { name: titulo, label: Título, widget: string },
+            { name: descripcion, label: Descripción, widget: string },
+            { name: pendiente, label: Pendiente de revisión, widget: boolean, default: true },
+            { name: actualizado, label: Última actualización, widget: datetime, format: YYYY-MM-DD, date_format: DD/MM/YYYY, time_format: false, required: false },
+            { name: body, label: Texto, widget: markdown },
+          ] }
+      - { name: privacidad, label: Política de privacidad, file: src/content/legal/privacidad.md, fields: *camposLegal }
+      - { name: cookies, label: Política de cookies, file: src/content/legal/cookies.md, fields: *camposLegal }

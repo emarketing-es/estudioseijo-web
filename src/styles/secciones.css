@@ -1076,6 +1076,9 @@ a.filter {
   width: 100%;
   border-collapse: collapse;
   font-size: 15px;
+  /* En móvil, las tablas anchas se desplazan dentro de su caja en vez de ensanchar la página */
+  display: block;
+  overflow-x: auto;
 }
 .prose th,
 .prose td {

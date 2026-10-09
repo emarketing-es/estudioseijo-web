@@ -36,4 +36,18 @@ const blog = defineCollection({
     }),
 });
 
-export const collections = { blog };
+/**
+ * Textos legales (aviso legal, privacidad, cookies). Los aporta Estudio Seijo / asesoría: mientras
+ * `pendiente` sea true, la página muestra el aviso de plantilla pendiente de revisión.
+ */
+const legal = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/legal' }),
+  schema: z.object({
+    titulo: z.string(),
+    descripcion: z.string(),
+    pendiente: z.boolean().default(true),
+    actualizado: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { blog, legal };
