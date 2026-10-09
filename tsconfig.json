@@ -1,7 +1,15 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "referencia", "playwright-report", "test-results", "public/admin/cms"],
+  "exclude": [
+    "dist",
+    ".netlify",
+    "scripts/prototipo",
+    "referencia",
+    "playwright-report",
+    "test-results",
+    "public/admin/cms"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

@@ -8,3 +8,4 @@ test-results/
 public/
 CLAUDE.md
 public/admin/cms/
+.netlify/
