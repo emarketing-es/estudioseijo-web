@@ -1,0 +1,50 @@
+---
+/**
+ * Página interior con la cabecera de sección de la maqueta (`.page-hero`): etiqueta, titular con punto
+ * naranja final y entradilla opcional. El contenido de la página va en el slot.
+ */
+import Etiqueta from '@/components/ui/Etiqueta.astro';
+import Base from './Base.astro';
+
+interface Props {
+  titulo: string;
+  /** Titular visible (h1). Si se omite, se usa `titulo`. Sin punto final: se añade el punto naranja. */
+  titular?: string;
+  etiqueta: string;
+  entradilla?: string;
+  descripcion?: string;
+  /** Círculo decorativo naranja suave en lugar de azul (variante `.warm` de la maqueta). */
+  calida?: boolean;
+  noindex?: boolean;
+  /** Portada: el <title> es «Estudio Seijo · lema» en lugar de «Título · Estudio Seijo». */
+  portada?: boolean;
+}
+
+const {
+  titulo,
+  titular = titulo,
+  etiqueta,
+  entradilla,
+  descripcion,
+  calida = false,
+  noindex,
+  portada = false,
+} = Astro.props;
+---
+
+<Base titulo={portada ? undefined : titulo} descripcion={descripcion} noindex={noindex}>
+  <section class:list={['page-hero', { warm: calida }]}>
+    <div class="wrap">
+      <div class="copy">
+        <Etiqueta>{etiqueta}</Etiqueta>
+        <h1 class="h1">
+          {titular}
+          <span class="dot">.</span>
+        </h1>
+        {entradilla && <p class="lead">{entradilla}</p>}
+      </div>
+      <slot name="hero-aside" />
+    </div>
+  </section>
+  <slot />
+</Base>

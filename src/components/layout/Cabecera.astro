@@ -1,0 +1,63 @@
+---
+import Icono from '@/components/ui/Icono.astro';
+import { contacto, menuPrincipal, sitio } from '@/config/sitio';
+
+/** Marca como actual el enlace del menú que corresponde a la página (p. ej. /blog y /blog/…). */
+const ruta = Astro.url.pathname.replace(/\/$/, '') || '/';
+const esActual = (href: string) => !href.includes('#') && (ruta === href || ruta.startsWith(`${href}/`));
+---
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label={`${sitio.marca} Inicio`}>
+      <img src="/img/logos/logo-estudioseijo.png" alt={sitio.marca} width="146" height="26" />
+    </a>
+    <nav class="nav" id="menu" aria-label="Principal">
+      {menuPrincipal.map((enlace) => (
+        <a href={enlace.href} aria-current={esActual(enlace.href) ? 'page' : undefined}>
+          {enlace.texto}
+        </a>
+      ))}
+    </nav>
+    <div class="header-actions">
+      <a class="header-phone" href={contacto.telefono.enlace} data-evento="click_telefono">
+        <Icono nombre="phone" />
+        {contacto.telefono.visible}
+      </a>
+      <a class="btn btn-cta btn-sm" href="/#reserva">
+        Reservar revisión gratuita
+      </a>
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu"
+        aria-label="Abrir menú"
+      >
+        <Icono nombre="menu" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Menú móvil: abre y cierra el menú; se cierra al elegir un enlace o con la tecla Escape.
+  const boton = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const menu = document.querySelector<HTMLElement>('#menu');
+
+  if (boton && menu) {
+    const cambiar = (abrir: boolean) => {
+      menu.classList.toggle('open', abrir);
+      boton.setAttribute('aria-expanded', String(abrir));
+      boton.setAttribute('aria-label', abrir ? 'Cerrar menú' : 'Abrir menú');
+    };
+    boton.addEventListener('click', () => cambiar(!menu.classList.contains('open')));
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => cambiar(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('open')) {
+        cambiar(false);
+        boton.focus();
+      }
+    });
+  }
+</script>

@@ -1,0 +1,14 @@
+---
+/** Etiqueta en DM Mono mayúsculas con el punto naranja inicial («● Texto»), como en la maqueta. */
+interface Props {
+  punto?: boolean;
+}
+
+const { punto = true } = Astro.props;
+---
+
+<div class="label">
+  {punto && <span class="bullet">●</span>}
+  {punto && <>&nbsp; </>}
+  <slot />
+</div>

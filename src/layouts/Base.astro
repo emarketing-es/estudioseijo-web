@@ -1,0 +1,58 @@
+---
+/**
+ * Layout base de todas las páginas: <head> con metadatos, cabecera, contenido y pie.
+ * El SEO completo (Open Graph con imagen, schema.org, sitemap) se completa en la fase 6.
+ */
+import '@/styles/global.css';
+import Cabecera from '@/components/layout/Cabecera.astro';
+import Pie from '@/components/layout/Pie.astro';
+import SpriteIconos from '@/components/ui/SpriteIconos.astro';
+import { sitio } from '@/config/sitio';
+
+interface Props {
+  /** Título de la página. Se completa como «Título · Estudio Seijo». Si se omite, se usa el de la portada. */
+  titulo?: string;
+  descripcion?: string;
+  /** Evita la indexación (p. ej. confirmación de reserva o 404). */
+  noindex?: boolean;
+}
+
+const { titulo, descripcion = sitio.descripcion, noindex = false } = Astro.props;
+
+const tituloCompleto = titulo ? `${titulo} · ${sitio.nombre}` : `${sitio.nombre} · ${sitio.lema}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={sitio.idioma}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={sitio.locale} />
+    <meta property="og:site_name" content={sitio.nombre} />
+    <meta name="theme-color" content="#FAFAF8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <slot name="head" />
+  </head>
+  <body>
+    <SpriteIconos />
+    <a class="sr-only skip-link" href="#contenido">
+      Saltar al contenido
+    </a>
+    <Cabecera />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Pie />
+  </body>
+</html>
