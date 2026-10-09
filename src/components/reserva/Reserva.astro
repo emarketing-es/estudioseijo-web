@@ -13,6 +13,8 @@ import { modalidades } from '@/config/reservas';
 import { contacto } from '@/config/sitio';
 
 const agendaGoogle = import.meta.env.PUBLIC_GOOGLE_BOOKING_URL as string | undefined;
+// Cloudflare Turnstile (anti-spam). Sin clave, el servidor no lo exige (desarrollo y pruebas).
+const turnstile = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 const urlAgenda = agendaGoogle ? `${agendaGoogle}${agendaGoogle.includes('?') ? '&' : '?'}gv=true` : null;
 const DIAS_SEMANA = [
   ['L', 'lunes'],
@@ -59,7 +61,7 @@ const DIAS_SEMANA = [
       </div>
     ) : (
       <>
-        <div class="panel" id="booking-widget">
+        <div class="panel" id="booking-widget" aria-busy="true">
           <noscript>
             <p class="hint-box" style="margin-bottom:24px">
               Para elegir día y hora en el calendario necesitas activar JavaScript. También puedes reservar
@@ -165,6 +167,11 @@ const DIAS_SEMANA = [
                   placeholder="Cuéntanos el problema o la idea, sin tecnicismos."
                 />
               </div>
+              {/* Campo trampa para bots: invisible y fuera del orden de tabulación */}
+              <div class="sr-only" aria-hidden="true">
+                <label for="r-web">No rellenes este campo</label>
+                <input id="r-web" name="web" type="text" tabindex="-1" autocomplete="off" />
+              </div>
               <label class="consent">
                 <input id="r-privacy" name="privacidad" type="checkbox" required />
                 <span>
@@ -178,6 +185,9 @@ const DIAS_SEMANA = [
                   Elige día y hora en el calendario
                 </span>
               </div>
+              {turnstile && (
+                <div class="cf-turnstile" data-sitekey={turnstile} data-language="es" data-size="flexible" />
+              )}
               <p class="form-error" id="form-error" role="alert" hidden />
               <button type="submit" class="btn btn-cta" id="submit" aria-disabled="true" style="width:100%">
                 Elige día y hora para confirmar
@@ -233,6 +243,10 @@ const DIAS_SEMANA = [
     )}
   </div>
 </section>
+
+{turnstile && !urlAgenda && (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+)}
 
 <script>
   import { iniciarReserva } from './reserva';

@@ -1,28 +1,28 @@
 /**
- * Comportamiento de la reserva en el navegador: calendario accesible con teclado, horas, modalidad,
- * validación y envío provisional por WhatsApp o email (maqueta). La lógica pura está en src/lib/reservas.
+ * Comportamiento de la reserva en el navegador: calendario accesible con teclado, horas, modalidad y
+ * validación. Con Google Calendar conectado, la reserva se crea en el servidor (/api/reservas) y se pasa a
+ * /reserva/confirmada; sin conexión, la solicitud se envía por WhatsApp o email (modo provisional de la maqueta).
+ * La lógica pura está en src/lib/reservas.
  */
-import { contacto, sitio } from '@/config/sitio';
-import type { Disponibilidad } from '@/lib/reservas/disponibilidad-provisional';
+import { contacto } from '@/config/sitio';
+import { registrarEvento } from '@/lib/analitica';
 import {
   diaSemana,
   diasDelMes,
   etiquetaDia,
   etiquetaMes,
-  hoyEn,
   mesDe,
   sumarDias,
   sumarMeses,
   type FechaISO,
 } from '@/lib/reservas/fechas';
-import { proveedorProvisional, type ProveedorDisponibilidad } from '@/lib/reservas/proveedor';
+import { cargarDisponibilidad, type DatosDisponibilidad } from '@/lib/reservas/proveedor';
 import {
   enlaceEmail,
   enlaceWhatsapp,
   resumenSeleccion,
   textoSolicitud,
   validarSolicitud,
-  type CampoConError,
   type DatosSolicitud,
 } from '@/lib/reservas/solicitud';
 
@@ -38,20 +38,26 @@ interface Estado {
 const $ = <T extends HTMLElement>(selector: string, raiz: ParentNode = document) =>
   raiz.querySelector<T>(selector);
 
-export async function iniciarReserva(proveedor: ProveedorDisponibilidad = proveedorProvisional) {
+export async function iniciarReserva(
+  cargar: () => Promise<DatosDisponibilidad> = () => cargarDisponibilidad(),
+) {
   const panel = $('#booking-widget');
   if (!panel) return; // Plan B (agenda de Google) o página sin reserva
 
-  const hoy = hoyEn(new Date(), sitio.zonaHoraria);
-  const rango = proveedor.rango(hoy);
-  const disponibilidad: Disponibilidad = await proveedor.huecos(hoy, rango.desde, rango.hasta);
-  const diasLibres = Object.keys(disponibilidad).sort();
+  let { modo, rango, huecos: disponibilidad } = await cargar();
+  panel.dataset.modo = modo;
+  let iniciada = false;
+  let enviando = false;
+  panel.removeAttribute('aria-busy');
 
-  // «Próximo hueco libre» de la tarjeta de oferta
-  const primero = diasLibres[0];
-  document.querySelectorAll<HTMLElement>('[data-proximo-hueco]').forEach((el) => {
-    el.textContent = primero ? `${etiquetaDia(primero)}, ${disponibilidad[primero][0]} h` : 'Consúltanos';
-  });
+  function mostrarProximoHueco() {
+    // «Próximo hueco libre» de la tarjeta de oferta
+    const primero = Object.keys(disponibilidad).sort()[0];
+    document.querySelectorAll<HTMLElement>('[data-proximo-hueco]').forEach((el) => {
+      el.textContent = primero ? `${etiquetaDia(primero)}, ${disponibilidad[primero][0]} h` : 'Consúltanos';
+    });
+  }
+  mostrarProximoHueco();
 
   const rejilla = $('#cal-grid')!;
   const etiquetaMesEl = $('#cal-month')!;
@@ -67,8 +73,9 @@ export async function iniciarReserva(proveedor: ProveedorDisponibilidad = provee
   const error = $('#form-error')!;
   const hecho = $('#booking-done')!;
 
-  const primerMes = mesDe(rango.desde);
-  const ultimoMes = mesDe(rango.hasta);
+  let primerMes = mesDe(rango.desde);
+  let ultimoMes = mesDe(rango.hasta);
+  const primero = Object.keys(disponibilidad).sort()[0];
   const estado: Estado = {
     mes: primero ? mesDe(primero) : primerMes,
     fecha: null,
@@ -99,6 +106,7 @@ export async function iniciarReserva(proveedor: ProveedorDisponibilidad = provee
 
   function actualizar() {
     resumen.textContent = resumenSeleccion(estado.fecha, estado.hora, estado.modalidad);
+    if (enviando) return;
     const completo = Boolean(estado.fecha && estado.hora);
     enviar.setAttribute('aria-disabled', completo ? 'false' : 'true');
     enviar.textContent = completo ? 'Confirmar reunión' : 'Elige día y hora para confirmar';
@@ -179,6 +187,10 @@ export async function iniciarReserva(proveedor: ProveedorDisponibilidad = provee
   }
 
   function elegirDia(fecha: FechaISO) {
+    if (!iniciada) {
+      iniciada = true;
+      registrarEvento('reserva_iniciada', { modo });
+    }
     estado.fecha = fecha;
     estado.foco = fecha;
     estado.hora = null;
@@ -253,11 +265,85 @@ export async function iniciarReserva(proveedor: ProveedorDisponibilidad = provee
     });
   });
 
-  const campos: Record<Exclude<CampoConError, 'fecha'>, string> = {
+  const campos: Record<string, string> = {
     nombre: '#r-nombre',
+    empresa: '#r-empresa',
     email: '#r-email',
+    telefono: '#r-tel',
+    mensaje: '#r-msg',
     privacidad: '#r-privacy',
   };
+
+  function mostrarError(mensaje: string, campo?: string) {
+    error.textContent = mensaje;
+    error.hidden = false;
+    if (!campo || campo === 'fecha' || campo === 'hora') {
+      rejilla.querySelector<HTMLButtonElement>('button.cal-day[tabindex="0"]')?.focus();
+    } else if (campos[campo]) {
+      const elemento = $<HTMLInputElement>(campos[campo]);
+      elemento?.setAttribute('aria-invalid', 'true');
+      elemento?.focus();
+    }
+  }
+
+  /** Vuelve a pedir los huecos (p. ej. si el elegido se acaba de ocupar). */
+  async function recargar() {
+    ({ modo, rango, huecos: disponibilidad } = await cargar());
+    panel!.dataset.modo = modo;
+    primerMes = mesDe(rango.desde);
+    ultimoMes = mesDe(rango.hasta);
+    if (estado.fecha && !disponibilidad[estado.fecha]?.includes(estado.hora ?? '')) estado.hora = null;
+    if (estado.fecha && !libre(estado.fecha)) estado.fecha = null;
+    mostrarProximoHueco();
+    pintarCalendario();
+    pintarHoras();
+    actualizar();
+  }
+
+  async function reservarEnServidor(datos: DatosSolicitud & { fecha: FechaISO; hora: string }) {
+    enviar.setAttribute('aria-disabled', 'true');
+    enviar.textContent = 'Reservando…';
+    enviando = true;
+    try {
+      const r = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          ...datos,
+          turnstile: $<HTMLInputElement>('[name="cf-turnstile-response"]')?.value ?? '',
+          web: $<HTMLInputElement>('#r-web')?.value ?? '',
+        }),
+      });
+      const cuerpo = (await r.json().catch(() => ({}))) as { error?: string; campo?: string; modo?: string };
+      if (r.status === 201) {
+        const destino = new URLSearchParams({
+          fecha: datos.fecha,
+          hora: datos.hora,
+          modalidad: datos.modalidad,
+        });
+        window.location.assign(`/reserva/confirmada?${destino}`);
+        return;
+      }
+      if (r.status === 503 && cuerpo.modo === 'sin-credenciales') {
+        // El servidor ha perdido la conexión con Google: se ofrece el envío por WhatsApp o email
+        mostrarHecho(datos);
+        return;
+      }
+      if (r.status === 409) await recargar();
+      mostrarError(
+        cuerpo.error ??
+          `No hemos podido completar la reserva. Llámanos al ${contacto.telefono.visible} y la hacemos por teléfono.`,
+        cuerpo.campo,
+      );
+      // Turnstile solo vale para un intento: se renueva para el siguiente
+      (window as { turnstile?: { reset(): void } }).turnstile?.reset();
+    } catch {
+      mostrarError(`No hay conexión. Inténtalo de nuevo o llámanos al ${contacto.telefono.visible}.`);
+    } finally {
+      enviando = false;
+      actualizar();
+    }
+  }
 
   function leerDatos(): DatosSolicitud {
     const valor = (id: string) => $<HTMLInputElement>(id)?.value ?? '';
@@ -294,24 +380,16 @@ export async function iniciarReserva(proveedor: ProveedorDisponibilidad = provee
 
   formulario.addEventListener('submit', (e) => {
     e.preventDefault();
+    if (enviando) return;
     error.hidden = true;
     Object.values(campos).forEach((id) => $(id)?.removeAttribute('aria-invalid'));
 
     const datos = leerDatos();
     const problema = validarSolicitud(datos);
-    if (problema) {
-      error.textContent = problema.mensaje;
-      error.hidden = false;
-      if (problema.campo === 'fecha') {
-        rejilla.querySelector<HTMLButtonElement>('button.cal-day[tabindex="0"]')?.focus();
-      } else {
-        const campo = $<HTMLInputElement>(campos[problema.campo]);
-        campo?.setAttribute('aria-invalid', 'true');
-        campo?.focus();
-      }
-      return;
-    }
-    mostrarHecho(datos as DatosSolicitud & { fecha: FechaISO; hora: string });
+    if (problema) return mostrarError(problema.mensaje, problema.campo);
+    const completos = datos as DatosSolicitud & { fecha: FechaISO; hora: string };
+    if (modo === 'google') void reservarEnServidor(completos);
+    else mostrarHecho(completos);
   });
 
   $('#copy-btn')!.addEventListener('click', async (e) => {

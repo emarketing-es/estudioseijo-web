@@ -1,26 +1,37 @@
 /**
- * Origen de los huecos libres que muestra el calendario. La interfaz de reserva solo conoce este contrato,
- * así que en la fase 4 basta con cambiar el proveedor provisional por uno que llame a /api/disponibilidad.
+ * Origen de los huecos que muestra el calendario.
+ *  - «google»: huecos reales de /api/disponibilidad (fase 4). Al confirmar, se crea la reunión en el servidor.
+ *  - «provisional»: si el servidor no tiene credenciales de Google o no responde, huecos calculados en el
+ *    navegador con las reglas fijas; al confirmar, la solicitud se envía por WhatsApp o email (maqueta).
  */
 import { reglasReserva } from '@/config/reservas';
-import {
-  huecosProvisionales,
-  primerDiaReservable,
-  ultimoDiaReservable,
-  type Disponibilidad,
-} from './disponibilidad-provisional';
+import { calcularHuecos, rangoReservable, type Disponibilidad } from './huecos';
 import type { FechaISO } from './fechas';
 
-export interface ProveedorDisponibilidad {
-  /** Primer y último día que se pueden reservar. */
-  rango(hoy: FechaISO): { desde: FechaISO; hasta: FechaISO };
-  huecos(hoy: FechaISO, desde: FechaISO, hasta: FechaISO): Promise<Disponibilidad>;
+export interface DatosDisponibilidad {
+  modo: 'google' | 'provisional';
+  rango: { desde: FechaISO; hasta: FechaISO };
+  huecos: Disponibilidad;
 }
 
-export const proveedorProvisional: ProveedorDisponibilidad = {
-  rango: (hoy) => ({
-    desde: primerDiaReservable(reglasReserva, hoy),
-    hasta: ultimoDiaReservable(reglasReserva, hoy),
-  }),
-  huecos: async (hoy, desde, hasta) => huecosProvisionales(reglasReserva, hoy, desde, hasta),
-};
+export function disponibilidadProvisional(ahora: Date): DatosDisponibilidad {
+  const rango = rangoReservable(reglasReserva, ahora);
+  return { modo: 'provisional', rango, huecos: calcularHuecos({ reglas: reglasReserva, ahora, ...rango }) };
+}
+
+/** Pide los huecos reales al servidor; ante cualquier problema, cae al modo provisional. */
+export async function cargarDisponibilidad(
+  ahora: Date = new Date(),
+  pedir: typeof fetch = fetch,
+): Promise<DatosDisponibilidad> {
+  try {
+    const r = await pedir('/api/disponibilidad', { headers: { Accept: 'application/json' } });
+    if (r.ok) {
+      const datos = (await r.json()) as DatosDisponibilidad;
+      if (datos.modo === 'google' && datos.rango && datos.huecos) return datos;
+    }
+  } catch {
+    // Sin servidor (p. ej. hosting estático) o sin conexión: modo provisional
+  }
+  return disponibilidadProvisional(ahora);
+}
