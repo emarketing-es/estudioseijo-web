@@ -17,7 +17,7 @@ Sitio web de Estudio Seijo (Betanzos). Construido con **Astro + TypeScript** a p
 | 4 · Reservas con Google Calendar | ✅ Terminada (faltan credenciales)     |
 | 5 · Formularios, RGPD y legal    | ✅ Terminada (faltan textos legales)   |
 | 6 · SEO y analítica              | ✅ Terminada (falta ID de GA4)         |
-| 7 · QA y publicación             | Pendiente                              |
+| 7 · QA y publicación             | En curso (QA hecho; falta el hosting)  |
 
 ## Requisitos
 
@@ -259,6 +259,23 @@ Si un artículo viene de la web antigua, su campo **URL en la web antigua** (`/n
 automáticamente la redirección 301 en el archivo `/_redirects` (formato de Netlify y Cloudflare Pages), con las
 variantes en que Google pudo indexarla (`%BF`, `%3A`, decodificada y con o sin barra final). Cualquier otra URL
 `/noticia/…` redirige al listado del blog.
+
+## Calidad (fase 7)
+
+Lighthouse en móvil (sitio construido, 9/10/2026):
+
+| Página    | Rendimiento | Accesibilidad | Buenas prácticas | SEO |
+| --------- | ----------- | ------------- | ---------------- | --- |
+| Inicio    | 97          | 100           | 100              | 100 |
+| Blog      | 98          | 100           | 100              | 100 |
+| Artículo  | 98          | 100           | 100              | 100 |
+| Opiniones | 98          | 100           | 100              | 100 |
+
+### Prototipo navegable sin servidor
+
+`pnpm build && pnpm prototipo <carpeta>` exporta el sitio con rutas relativas, tipografías incrustadas y las reservas
+**simuladas** en el navegador (`scripts/prototipo/simulador.js`, con un aviso visible), para revisarlo en una página
+privada o en cualquier alojamiento estático. No sustituye al despliegue real.
 
 ## Integración continua
 
