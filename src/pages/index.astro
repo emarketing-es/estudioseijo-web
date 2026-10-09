@@ -1,17 +1,24 @@
 ---
-import EnConstruccion from '@/components/ui/EnConstruccion.astro';
-import Pagina from '@/layouts/Pagina.astro';
-import { sitio } from '@/config/sitio';
+import BandaCta from '@/components/inicio/BandaCta.astro';
+import Casos from '@/components/inicio/Casos.astro';
+import Hero from '@/components/inicio/Hero.astro';
+import Noticias from '@/components/inicio/Noticias.astro';
+import Nosotros from '@/components/inicio/Nosotros.astro';
+import Opiniones from '@/components/inicio/Opiniones.astro';
+import Servicios from '@/components/inicio/Servicios.astro';
+import Software from '@/components/inicio/Software.astro';
+import Reserva from '@/components/reserva/Reserva.astro';
+import Base from '@/layouts/Base.astro';
 ---
 
-<Pagina
-  titulo={sitio.lema}
-  portada
-  etiqueta="Tecnología · Marketing · Software para empresas"
-  entradilla="Desde Betanzos ayudamos a empresas y negocios a mejorar sus procesos, su presencia digital y su gestión. Empieza por una revisión digital gratuita de tu negocio."
->
-  <EnConstruccion fase="fase 2">
-    Aquí irán, en el orden de la maqueta: oferta, «¿Te pasa alguna de estas cosas?», pasos, reserva,
-    servicios, software propio, nosotros, opiniones, últimas noticias y banda final.
-  </EnConstruccion>
-</Pagina>
+<Base>
+  <Hero />
+  <Casos />
+  <Reserva />
+  <Servicios />
+  <Software />
+  <Nosotros />
+  <Opiniones />
+  <Noticias />
+  <BandaCta />
+</Base>

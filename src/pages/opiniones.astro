@@ -1,6 +1,12 @@
 ---
-import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import RejillaOpiniones from '@/components/opiniones/RejillaOpiniones.astro';
+import EnlaceGoogle from '@/components/ui/EnlaceGoogle.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { google } from '@/config/sitio';
+import { resumenGoogle } from '@/data/opiniones';
 import Pagina from '@/layouts/Pagina.astro';
+
+const media = resumenGoogle.media?.toLocaleString('es-ES', { maximumFractionDigits: 1 });
 ---
 
 <Pagina
@@ -11,7 +17,37 @@ import Pagina from '@/layouts/Pagina.astro';
   descripcion="Opiniones y reseñas de Google de los clientes de Estudio Seijo."
   calida
 >
-  <EnConstruccion fase="fase 2">
-    Huecos «Pendiente» preparados para reseñas reales de Google. Nunca se publicarán reseñas inventadas.
-  </EnConstruccion>
+  <div class="card rating-card" slot="hero-aside">
+    <div class="label">Valoración en Google</div>
+    <div class="stars" role="img" aria-label={media ? `${media} de 5` : 'Valoración pendiente'}>
+      {Array.from({ length: 5 }, () => (
+        <Icono nombre="star" />
+      ))}
+    </div>
+    <div style="font-size:28px;font-weight:500;letter-spacing:-0.02em">{media ?? '[Valoración media]'}</div>
+    <div class="small">{resumenGoogle.total ?? '[Número]'} reseñas en Google</div>
+    <EnlaceGoogle href={google.fichaUrl} clase="btn-out" style="margin-top:6px">
+      Ver perfil en Google
+    </EnlaceGoogle>
+  </div>
+
+  <section class="section" style="padding-top:56px">
+    <div class="wrap section-inner" style="gap:28px">
+      <RejillaOpiniones minimo={6} />
+      <div class="dark-cta">
+        <div>
+          <div class="label" style="color:var(--g400)">
+            ¿Has trabajado con nosotros?
+          </div>
+          <h2 class="t">
+            Tu opinión ayuda a otras empresas a decidir<span class="dot">.</span>
+          </h2>
+          <div class="s">Cuéntanos en Google qué necesitabas, cómo lo resolvimos y qué destacarías.</div>
+        </div>
+        <EnlaceGoogle href={google.resenaUrl} clase="btn-cta" flecha>
+          Escribir una reseña en Google
+        </EnlaceGoogle>
+      </div>
+    </div>
+  </section>
 </Pagina>

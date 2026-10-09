@@ -1,0 +1,59 @@
+---
+/**
+ * Tarjeta de reseña. Sin `opinion`, es un hueco «Pendiente» (maqueta) a la espera de una reseña real.
+ */
+import Icono from '@/components/ui/Icono.astro';
+import type { Opinion } from '@/data/opiniones';
+
+interface Props {
+  opinion?: Opinion;
+}
+
+const { opinion } = Astro.props;
+---
+
+{opinion ? (
+  <article class="card review" style="border-style:solid">
+    <div class="review-top">
+      <div
+        class="stars"
+        role="img"
+        aria-label={`${opinion.valoracion} de 5 estrellas`}
+        style="color:var(--cta-strong)"
+      >
+        {Array.from({ length: opinion.valoracion }, () => (
+          <Icono nombre="star" />
+        ))}
+      </div>
+    </div>
+    <p class="body">{opinion.texto}</p>
+    <div class="review-who">
+      <span class="avatar" />
+      <span>
+        <span style="font-size:14px;font-weight:500">{opinion.autor}</span>
+        <br />
+        <span class="small">{opinion.detalle}</span>
+      </span>
+    </div>
+  </article>
+) : (
+  <article class="card review">
+    <div class="review-top">
+      <div class="stars" role="img" aria-label="Valoración pendiente">
+        {Array.from({ length: 5 }, () => (
+          <Icono nombre="star" />
+        ))}
+      </div>
+      <span class="pill">Pendiente</span>
+    </div>
+    <p class="body">Espacio reservado para una reseña real de Google.</p>
+    <div class="review-who">
+      <span class="avatar" />
+      <span>
+        <span style="font-size:14px;font-weight:500">[Nombre del cliente]</span>
+        <br />
+        <span class="small">[Empresa · servicio]</span>
+      </span>
+    </div>
+  </article>
+)}

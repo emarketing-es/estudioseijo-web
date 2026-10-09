@@ -1,0 +1,25 @@
+---
+/** Rejilla de reseñas reales; completa con huecos «Pendiente» hasta `minimo` tarjetas. */
+import { opiniones } from '@/data/opiniones';
+import TarjetaOpinion from './TarjetaOpinion.astro';
+
+interface Props {
+  /** Número de tarjetas que se muestran como mínimo (3 en el inicio, 6 en /opiniones). */
+  minimo: number;
+  /** Máximo de reseñas reales (en el inicio, solo 3). */
+  maximo?: number;
+}
+
+const { minimo, maximo = Infinity } = Astro.props;
+const reales = opiniones.slice(0, maximo);
+const huecos = Math.max(0, minimo - reales.length);
+---
+
+<div class="grid grid-3">
+  {reales.map((opinion) => (
+    <TarjetaOpinion opinion={opinion} />
+  ))}
+  {Array.from({ length: huecos }, () => (
+    <TarjetaOpinion />
+  ))}
+</div>
