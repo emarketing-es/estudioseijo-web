@@ -1,0 +1,54 @@
+---
+import Icono from '@/components/ui/Icono.astro';
+import { contacto, menuLegal, menuPie, sitio } from '@/config/sitio';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-brand">
+        <img src="/img/logos/logo-estudioseijo-blanco.png" alt={sitio.marca} width="157" height="28" />
+        <p>{sitio.descripcionCorta}</p>
+      </div>
+      {menuPie.map((columna) => (
+        <div class="footer-col">
+          <div class="label">{columna.titulo}</div>
+          {columna.enlaces.map((enlace) => (
+            <a href={enlace.href}>{enlace.texto}</a>
+          ))}
+        </div>
+      ))}
+      <div class="footer-col">
+        <div class="label">Contacto</div>
+        <a class="strong" href={contacto.telefono.enlace} data-evento="click_telefono">
+          <Icono nombre="phone" />
+          {contacto.telefono.visible}
+        </a>
+        <a class="strong" href={contacto.whatsapp.enlace} data-evento="click_whatsapp">
+          <Icono nombre="chat" />
+          WhatsApp {contacto.whatsapp.visible}
+        </a>
+        <a href={contacto.email.enlace}>
+          <Icono nombre="mail" />
+          {contacto.email.visible}
+        </a>
+        <span>
+          <Icono nombre="pin" />
+          {contacto.localidad} · {contacto.provincia}
+        </span>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>
+        © {anio} {sitio.nombre}
+      </span>
+      <nav aria-label="Legal">
+        {menuLegal.map((enlace) => (
+          <a href={enlace.href}>{enlace.texto}</a>
+        ))}
+      </nav>
+    </div>
+  </div>
+</footer>

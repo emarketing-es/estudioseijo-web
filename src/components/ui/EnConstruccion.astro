@@ -1,0 +1,21 @@
+---
+/**
+ * Aviso temporal para las páginas que aún no se han maquetado. Desaparece al completar su fase.
+ */
+interface Props {
+  fase: string;
+}
+
+const { fase } = Astro.props;
+---
+
+<section class="section" style="padding-top:48px">
+  <div class="wrap">
+    <div class="card pendiente" role="note">
+      <div class="label">En construcción · {fase}</div>
+      <p class="body">
+        <slot>Esta página se maquetará siguiendo la maqueta aprobada.</slot>
+      </p>
+    </div>
+  </div>
+</section>

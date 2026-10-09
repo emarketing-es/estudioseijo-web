@@ -1,0 +1,32 @@
+/** Nombres de los iconos disponibles en SpriteIconos.astro. */
+export const nombresIconos = [
+  'search',
+  'repeat',
+  'clock',
+  'monitor',
+  'sheet',
+  'question',
+  'link',
+  'bulb',
+  'dots',
+  'check',
+  'phone',
+  'chat',
+  'mail',
+  'pin',
+  'calendar',
+  'people',
+  'bars',
+  'stack',
+  'gear',
+  'share',
+  'shield',
+  'box',
+  'arrow-l',
+  'arrow-r',
+  'star',
+  'video',
+  'menu',
+] as const;
+
+export type NombreIcono = (typeof nombresIconos)[number];

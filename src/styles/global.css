@@ -1,0 +1,10 @@
+/* Punto de entrada de los estilos globales.
+   Las tipografías se sirven desde nuestro dominio (sin peticiones a Google antes del consentimiento). */
+/* DM Sans variable con eje de tamaño óptico (equivale a la carga de Google Fonts de la maqueta) */
+@import '@fontsource-variable/dm-sans/opsz.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';

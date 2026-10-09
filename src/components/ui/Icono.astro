@@ -1,0 +1,17 @@
+---
+/**
+ * Icono de línea del sprite (ver SpriteIconos.astro). Es decorativo: el texto que lo acompaña da el significado.
+ */
+import type { NombreIcono } from './iconos';
+
+interface Props {
+  nombre: NombreIcono;
+  class?: string;
+}
+
+const { nombre, class: clase } = Astro.props;
+---
+
+<svg class:list={['i', clase]} aria-hidden="true">
+  <use href={`#i-${nombre}`}></use>
+</svg>

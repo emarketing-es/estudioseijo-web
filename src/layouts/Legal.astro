@@ -1,0 +1,36 @@
+---
+/**
+ * Páginas legales (aviso legal, privacidad, cookies). Estructura de la maqueta.
+ * PENDIENTE: los textos vigentes los aporta Estudio Seijo / asesoría (fase 5). Hasta entonces se muestra el aviso.
+ */
+import { contacto } from '@/config/sitio';
+import Pagina from './Pagina.astro';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+}
+
+const { titulo, descripcion } = Astro.props;
+const tieneTexto = Astro.slots.has('default');
+---
+
+<Pagina titulo={titulo} etiqueta="Información legal" descripcion={descripcion}>
+  <section class="section" style="padding-top:48px">
+    <div class="wrap">
+      <div class="card" style="max-width:760px;display:flex;flex-direction:column;gap:14px">
+        {tieneTexto ? (
+          <slot />
+        ) : (
+          <p class="body">
+            <strong>Pendiente:</strong> texto legal vigente de estudioseijo.com (titular, NIF, domicilio,
+            datos registrales y condiciones). Lo aporta Estudio Seijo.
+          </p>
+        )}
+        <p class="small">
+          Contacto: {contacto.email.visible} · {contacto.telefono.visible}
+        </p>
+      </div>
+    </div>
+  </section>
+</Pagina>

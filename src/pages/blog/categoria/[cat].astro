@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from 'astro';
+import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import Pagina from '@/layouts/Pagina.astro';
+import { categorias, type Categoria } from '@/config/blog';
+
+export const getStaticPaths = (() =>
+  categorias.map((categoria) => ({
+    params: { cat: categoria.slug },
+    props: { categoria },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  categoria: Categoria;
+}
+
+const { categoria } = Astro.props;
+---
+
+<Pagina
+  titulo={`${categoria.nombre} · Blog`}
+  titular={categoria.nombre}
+  etiqueta="Noticias y blog"
+  descripcion={`Artículos de ${categoria.nombre.toLowerCase()} para pymes.`}
+>
+  <EnConstruccion fase="fase 3">Artículos de la categoría «{categoria.nombre}».</EnConstruccion>
+</Pagina>
