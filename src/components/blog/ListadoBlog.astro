@@ -1,0 +1,53 @@
+---
+/**
+ * Listado del blog con filtros por categoría (maqueta). Cada filtro es una página propia
+ * (/blog o /blog/categoria/…), así funciona sin JavaScript y cada categoría tiene su URL indexable.
+ */
+import Icono from '@/components/ui/Icono.astro';
+import { categorias, type Categoria } from '@/config/blog';
+import type { Articulo } from '@/lib/blog';
+import TarjetaArticulo from './TarjetaArticulo.astro';
+
+interface Props {
+  articulos: Articulo[];
+  activa?: Categoria;
+}
+
+const { articulos, activa } = Astro.props;
+const filtros = [
+  { nombre: 'Todas', href: '/blog' },
+  ...categorias.map((c) => ({ nombre: c.nombre, href: `/blog/categoria/${c.slug}` })),
+];
+const actual = activa ? `/blog/categoria/${activa.slug}` : '/blog';
+---
+
+<section class="section" style="padding-top:48px">
+  <div class="wrap section-inner" style="gap:28px">
+    <nav class="filters" aria-label="Filtrar por categoría">
+      {filtros.map((f) => (
+        <a class="filter" href={f.href} aria-current={f.href === actual ? 'page' : undefined}>
+          {f.nombre}
+        </a>
+      ))}
+    </nav>
+    <p class="small">{articulos.length === 1 ? '1 artículo' : `${articulos.length} artículos`}</p>
+    {articulos.length > 0 ? (
+      <div class="grid grid-3">
+        {articulos.map((articulo) => (
+          <TarjetaArticulo articulo={articulo} />
+        ))}
+      </div>
+    ) : (
+      <p class="hint-box">Todavía no hay artículos publicados en esta categoría.</p>
+    )}
+    <div class="dark-cta">
+      <div>
+        <div class="t">¿Te ves reflejado en alguno de estos temas?</div>
+        <div class="s">Lo revisamos contigo, sin coste: revisión digital gratuita de aprox. 4 h.</div>
+      </div>
+      <a class="btn btn-cta" href="/#reserva">
+        Reservar mi revisión gratuita <Icono nombre="arrow-r" />
+      </a>
+    </div>
+  </div>
+</section>

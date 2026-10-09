@@ -1,0 +1,36 @@
+---
+/** Tarjeta de artículo con la composición geométrica de su categoría (maqueta). */
+import Icono from '@/components/ui/Icono.astro';
+import { categoriaPorNombre, formatoFecha } from '@/config/blog';
+import { urlArticulo, type Articulo } from '@/lib/blog';
+
+interface Props {
+  articulo: Articulo;
+  /** h2 en los listados del blog, h3 en el inicio (bajo el h2 de la sección). */
+  nivel?: 'h2' | 'h3';
+}
+
+const { articulo, nivel = 'h2' } = Astro.props;
+const { titulo, resumen, fecha, categoria } = articulo.data;
+const Titulo = nivel;
+---
+
+<article class:list={['post', categoriaPorNombre(categoria)?.clase]} data-cat={categoria}>
+  <div class="post-art" aria-hidden="true"></div>
+  <div class="post-body">
+    <div class="post-meta">
+      <span class="label">{categoria}</span>
+      <time class="small" datetime={fecha.toISOString().slice(0, 10)}>
+        {formatoFecha(fecha)}
+      </time>
+    </div>
+    <Titulo class="post-title">{titulo}</Titulo>
+    <p class="body" style="font-size:14px">
+      {resumen}
+    </p>
+    <a class="post-link" href={urlArticulo(articulo)}>
+      Leer artículo <span class="sr-only">«{titulo}»</span>
+      <Icono nombre="arrow-r" />
+    </a>
+  </div>
+</article>

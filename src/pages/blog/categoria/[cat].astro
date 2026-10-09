@@ -1,8 +1,9 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import ListadoBlog from '@/components/blog/ListadoBlog.astro';
 import Pagina from '@/layouts/Pagina.astro';
 import { categorias, type Categoria } from '@/config/blog';
+import { articulosPublicados } from '@/lib/blog';
 
 export const getStaticPaths = (() =>
   categorias.map((categoria) => ({
@@ -15,13 +16,15 @@ interface Props {
 }
 
 const { categoria } = Astro.props;
+const articulos = (await articulosPublicados()).filter((a) => a.data.categoria === categoria.nombre);
 ---
 
 <Pagina
   titulo={`${categoria.nombre} · Blog`}
   titular={categoria.nombre}
   etiqueta="Noticias y blog"
-  descripcion={`Artículos de ${categoria.nombre.toLowerCase()} para pymes.`}
+  entradilla="Web, captación, datos, normativa, automatización y software de gestión, explicados de forma práctica y sin tecnicismos."
+  descripcion={`Artículos de ${categoria.nombre.toLowerCase()} para pymes, explicados de forma práctica.`}
 >
-  <EnConstruccion fase="fase 3">Artículos de la categoría «{categoria.nombre}».</EnConstruccion>
+  <ListadoBlog articulos={articulos} activa={categoria} />
 </Pagina>

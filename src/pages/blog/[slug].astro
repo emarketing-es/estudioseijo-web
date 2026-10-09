@@ -1,15 +1,45 @@
 ---
 /**
- * Artículo del blog. En la fase 3 las rutas saldrán de la colección de contenido `blog`
- * (Markdown + Decap CMS). Mientras tanto no se genera ninguna.
+ * Artículo del blog. Fase 2: cabecera con los datos del artículo y aviso de texto pendiente.
+ * Fase 3: texto completo, autor, tiempo de lectura, CTA a la reserva y datos estructurados.
  */
 import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
 import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import { formatoFecha } from '@/config/blog';
 import Pagina from '@/layouts/Pagina.astro';
+import { articulosPublicados, type Articulo } from '@/lib/blog';
 
-export const getStaticPaths = (() => []) satisfies GetStaticPaths;
+export const getStaticPaths = (async () =>
+  (await articulosPublicados()).map((articulo) => ({
+    params: { slug: articulo.id },
+    props: { articulo },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  articulo: Articulo;
+}
+
+const { articulo } = Astro.props;
+const { titulo, resumen, fecha, categoria } = articulo.data;
+const { Content } = await render(articulo);
+// El cuerpo solo tiene el comentario «PENDIENTE» hasta migrar el texto en la fase 3
+const tieneTexto = (articulo.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
 ---
 
-<Pagina titulo="Artículo" etiqueta="Noticias y blog">
-  <EnConstruccion fase="fase 3" />
+<Pagina
+  titulo={titulo}
+  etiqueta={`${categoria} · ${formatoFecha(fecha)}`}
+  entradilla={resumen}
+  descripcion={resumen}
+>
+  {tieneTexto ? (
+    <section class="section" style="padding-top:48px">
+      <div class="wrap">
+        <Content />
+      </div>
+    </section>
+  ) : (
+    <EnConstruccion fase="fase 3">Texto del artículo pendiente de migrar desde la web actual.</EnConstruccion>
+  )}
 </Pagina>
