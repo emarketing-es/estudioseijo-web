@@ -1,0 +1,87 @@
+# Decap CMS · configuración del gestor de contenidos (/admin)
+# Los campos de la colección «blog» deben coincidir con el esquema de src/content.config.ts.
+
+backend:
+  name: github
+  repo: emarketing-es/estudioseijo-web
+  branch: main
+  # PENDIENTE (hosting): para entrar con GitHub desde la web publicada hace falta un servicio de
+  # autenticación OAuth. En Netlify es automático; en otros hostings se indica aquí con `base_url`.
+  # base_url: https://…
+
+# Modo local: con `pnpm cms` en marcha, /admin edita los archivos del ordenador sin pasar por GitHub.
+local_backend: true
+
+locale: es
+site_url: https://estudioseijo.com
+display_url: https://estudioseijo.com
+logo_url: /img/logos/logo-estudioseijo.png
+
+media_folder: public/img/blog
+public_folder: /img/blog
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  - name: blog
+    label: Blog
+    label_singular: Artículo
+    description: Artículos del blog. Marca «Borrador» para guardar sin publicar.
+    folder: src/content/blog
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: titulo
+    slug: '{{fields.titulo}}'
+    summary: '{{fecha}} · {{titulo}}'
+    sortable_fields: ['fecha', 'titulo', 'categoria']
+    view_filters:
+      - { label: Borradores, field: draft, pattern: true }
+      - { label: Publicados, field: draft, pattern: false }
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - name: resumen
+        label: Resumen
+        widget: text
+        hint: Una o dos frases. Se muestra en las tarjetas del blog y en Google.
+      - name: fecha
+        label: Fecha
+        widget: datetime
+        format: YYYY-MM-DD
+        date_format: DD/MM/YYYY
+        time_format: false
+      - name: categoria
+        label: Categoría
+        widget: select
+        options:
+          - Web y ecommerce
+          - SEO y captación
+          - Analítica y datos
+          - Normativa y cumplimiento
+          - Automatización e IA
+          - Software de gestión
+      - { name: autor, label: Autor, widget: string, default: Estudio Seijo }
+      - name: imagen
+        label: Imagen de cabecera
+        widget: image
+        required: false
+        hint: Opcional. Si no hay imagen, se usa la composición geométrica de la categoría.
+      - name: imagenAlt
+        label: Descripción de la imagen
+        widget: string
+        required: false
+        hint: Obligatoria si hay imagen. Describe lo que se ve, para personas que no pueden verla.
+      - name: urlAntigua
+        label: URL en la web antigua
+        widget: string
+        required: false
+        hint: Solo para artículos migrados (empieza por /noticia/). Crea la redirección 301 automáticamente.
+        pattern: ['^/noticia/', 'Debe empezar por /noticia/']
+      - name: draft
+        label: Borrador
+        widget: boolean
+        default: false
+        hint: Activado, el artículo se guarda pero no se publica en la web.
+      - { name: body, label: Texto, widget: markdown }

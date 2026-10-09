@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { tiempoLectura } from './blog-utilidades';
 
 export type Articulo = CollectionEntry<'blog'>;
 
@@ -9,3 +10,16 @@ export async function articulosPublicados(): Promise<Articulo[]> {
 }
 
 export const urlArticulo = (articulo: Articulo) => `/blog/${articulo.id}`;
+
+export const minutosLectura = (articulo: Articulo) => tiempoLectura(articulo.body ?? '');
+
+/**
+ * Artículos relacionados: primero los de la misma categoría y después los más recientes del resto,
+ * sin repetir el propio artículo.
+ */
+export function relacionados(articulo: Articulo, todos: Articulo[], cuantos = 3): Articulo[] {
+  const otros = todos.filter((a) => a.id !== articulo.id);
+  const mismaCategoria = otros.filter((a) => a.data.categoria === articulo.data.categoria);
+  const resto = otros.filter((a) => a.data.categoria !== articulo.data.categoria);
+  return [...mismaCategoria, ...resto].slice(0, cuantos);
+}

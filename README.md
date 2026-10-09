@@ -9,15 +9,15 @@ Sitio web de Estudio Seijo (Betanzos). Construido con **Astro + TypeScript** a p
 
 ## Estado
 
-| Fase                             | Estado       |
-| -------------------------------- | ------------ |
-| 1 · Arranque                     | ✅ Terminada |
-| 2 · Maquetación                  | ✅ Terminada |
-| 3 · Blog y CMS                   | Pendiente    |
-| 4 · Reservas con Google Calendar | Pendiente    |
-| 5 · Formularios, RGPD y legal    | Pendiente    |
-| 6 · SEO y analítica              | Pendiente    |
-| 7 · QA y publicación             | Pendiente    |
+| Fase                             | Estado                                 |
+| -------------------------------- | -------------------------------------- |
+| 1 · Arranque                     | ✅ Terminada                           |
+| 2 · Maquetación                  | ✅ Terminada                           |
+| 3 · Blog y CMS                   | ✅ Terminada (falta migrar los textos) |
+| 4 · Reservas con Google Calendar | Pendiente                              |
+| 5 · Formularios, RGPD y legal    | Pendiente                              |
+| 6 · SEO y analítica              | Pendiente                              |
+| 7 · QA y publicación             | Pendiente                              |
 
 ## Requisitos
 
@@ -35,6 +35,7 @@ pnpm dev              # servidor de desarrollo en http://localhost:4321
 | Script          | Qué hace                                                          |
 | --------------- | ----------------------------------------------------------------- |
 | `pnpm dev`      | Servidor de desarrollo con recarga automática                     |
+| `pnpm cms`      | Servidor local del gestor de contenidos (usar junto a `pnpm dev`) |
 | `pnpm build`    | Genera el sitio de producción en `dist/`                          |
 | `pnpm preview`  | Sirve `dist/` para revisarlo como en producción                   |
 | `pnpm check`    | Comprueba los tipos (TypeScript y componentes `.astro`)           |
@@ -58,7 +59,9 @@ la página actual en el menú y el menú móvil con teclado.
 
 ```
 ├─ referencia/            Fuentes de verdad: maqueta, marca y contenidos (no se modifican)
-├─ public/                Archivos que se publican tal cual (logotipos, favicons; /admin del CMS en la fase 3)
+├─ public/                Archivos que se publican tal cual (logotipos, favicons, imágenes del blog)
+│  └─ admin/              Gestor de contenidos Decap CMS (config.yml)
+├─ scripts/               Utilidades de build (copia de Decap CMS)
 ├─ src/
 │  ├─ config/             Datos de la empresa, menús, categorías del blog y reglas de reserva
 │  ├─ data/               Textos del inicio, licencias de software y reseñas
@@ -72,7 +75,7 @@ la página actual en el menú y el menú móvil con teclado.
 │  │  ├─ blog/            Tarjetas y listado de artículos
 │  │  ├─ opiniones/       Tarjetas de reseñas y huecos «Pendiente»
 │  │  └─ ui/              Iconos, etiquetas y piezas reutilizables
-│  ├─ layouts/            Base (head y estructura), Pagina (cabecera de sección), Legal
+│  ├─ layouts/            Base (head y estructura), Pagina (cabecera de sección), Articulo, Legal
 │  └─ pages/              Una página por ruta del sitio
 ├─ tests/
 │  ├─ unit/               Vitest
@@ -87,7 +90,7 @@ la página actual en el menú y el menú móvil con teclado.
 - **Licencias de software y precios:** `src/data/software.ts`.
 - **Reseñas reales de Google:** `src/data/opiniones.json` (mientras esté vacío se ven los huecos «Pendiente»).
 - **Horario de reuniones y antelación:** `src/config/reservas.ts`. **Festivos:** `config/festivos.json`.
-- **Artículos del blog:** `src/content/blog/*.md` (desde la fase 3, también desde `/admin`).
+- **Artículos del blog:** desde `/admin` (ver «Cómo publicar en el blog») o en `src/content/blog/*.md`.
 - **Colores, tipografía, radios, espaciado:** `src/styles/tokens.css`.
 - **Iconos:** `src/components/ui/SpriteIconos.astro` (iconos de línea, trazo 1,8).
 
@@ -107,6 +110,8 @@ sustituyen por datos de ejemplo.
   como `--ok-deco` solo para elementos decorativos.
 - **Accesibilidad:** enlace «Saltar al contenido» visible al recibir el foco, foco visible en todos los elementos,
   menú móvil con `aria-expanded` que se cierra con Escape.
+- **Decap CMS servido desde nuestro dominio** (`scripts/copiar-decap.mjs` lo copia de `node_modules` antes de cada
+  `dev`/`build`), sin depender de un CDN externo. Versión fijada en `package.json`.
 
 ## Reserva (estado provisional hasta la fase 4)
 
@@ -120,6 +125,54 @@ proveedor provisional por uno que llama a `/api/disponibilidad`, sin tocar la in
 
 El calendario se maneja con teclado: flechas para moverse entre días disponibles, Inicio/Fin para el primer y
 último día libre de la semana y Re Pág/Av Pág para cambiar de mes.
+
+## Cómo publicar en el blog
+
+Los artículos se gestionan desde el **gestor de contenidos** en `/admin` (Decap CMS). No hace falta tocar código.
+
+### Escribir un artículo
+
+1. Entra en `/admin` y pulsa **+ Artículo**.
+2. Rellena los campos:
+   - **Título** y **Resumen** (una o dos frases: se ven en las tarjetas del blog y en Google).
+   - **Fecha** de publicación y **Categoría**.
+   - **Autor** (si lo dejas vacío, firma «Estudio Seijo»).
+   - **Imagen de cabecera** (opcional). Si la pones, rellena también la **Descripción de la imagen**. Sin imagen,
+     el artículo usa la composición geométrica de colores de su categoría.
+   - **Texto**: el editor permite títulos, negritas, listas, enlaces, citas e imágenes. A la derecha ves la vista
+     previa con el estilo de la web.
+3. Si aún no quieres publicarlo, activa **Borrador**: se guarda, pero no aparece en la web.
+4. Pulsa **Publicar**. La web se vuelve a construir sola y el artículo aparece en unos minutos (cuando el sitio
+   esté desplegado; ver «Despliegue»).
+
+El tiempo de lectura, la página del artículo, su categoría, los artículos relacionados y el listado del blog se
+generan solos.
+
+### Quién puede publicar
+
+Cada persona que publique necesita una **cuenta de GitHub con permiso de escritura** en este repositorio. Al
+entrar en `/admin` se pulsa «Iniciar sesión con GitHub».
+
+> **Pendiente (hosting):** el acceso con GitHub desde la web publicada necesita un servicio de autenticación
+> (automático en Netlify; en otros hostings se configura `base_url` en `public/admin/config.yml`). Mientras el
+> hosting no esté decidido, el gestor se usa en modo local.
+
+### Modo local (en el ordenador, sin GitHub)
+
+```bash
+pnpm dev   # en una terminal
+pnpm cms   # en otra terminal
+```
+
+Abre `http://localhost:4321/admin/`: los cambios se guardan directamente en `src/content/blog/` y las imágenes en
+`public/img/blog/`. Después se suben al repositorio con un commit normal.
+
+### Artículos migrados y redirecciones
+
+Si un artículo viene de la web antigua, su campo **URL en la web antigua** (`/noticia/…`) genera
+automáticamente la redirección 301 en el archivo `/_redirects` (formato de Netlify y Cloudflare Pages), con las
+variantes en que Google pudo indexarla (`%BF`, `%3A`, decodificada y con o sin barra final). Cualquier otra URL
+`/noticia/…` redirige al listado del blog.
 
 ## Integración continua
 
@@ -136,7 +189,6 @@ secretos.
 
 - **Configuración de Google Calendar** (cuenta de servicio o OAuth): fase 4.
 - **Despliegue** (depende del hosting, pendiente de confirmar): fases 4 y 7.
-- **Cómo publicar en el blog** con Decap CMS (`/admin`): fase 3.
 
 ## Forma de trabajo
 

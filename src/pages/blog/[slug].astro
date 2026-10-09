@@ -1,45 +1,36 @@
 ---
-/**
- * Artículo del blog. Fase 2: cabecera con los datos del artículo y aviso de texto pendiente.
- * Fase 3: texto completo, autor, tiempo de lectura, CTA a la reserva y datos estructurados.
- */
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
-import EnConstruccion from '@/components/ui/EnConstruccion.astro';
-import { formatoFecha } from '@/config/blog';
-import Pagina from '@/layouts/Pagina.astro';
-import { articulosPublicados, type Articulo } from '@/lib/blog';
+import Articulo from '@/layouts/Articulo.astro';
+import { articulosPublicados, relacionados, type Articulo as TipoArticulo } from '@/lib/blog';
+import { textoPlano } from '@/lib/blog-utilidades';
 
-export const getStaticPaths = (async () =>
-  (await articulosPublicados()).map((articulo) => ({
+export const getStaticPaths = (async () => {
+  const todos = await articulosPublicados();
+  return todos.map((articulo) => ({
     params: { slug: articulo.id },
-    props: { articulo },
-  }))) satisfies GetStaticPaths;
+    props: { articulo, relacionados: relacionados(articulo, todos) },
+  }));
+}) satisfies GetStaticPaths;
 
 interface Props {
-  articulo: Articulo;
+  articulo: TipoArticulo;
+  relacionados: TipoArticulo[];
 }
 
-const { articulo } = Astro.props;
-const { titulo, resumen, fecha, categoria } = articulo.data;
+const { articulo, relacionados: otros } = Astro.props;
 const { Content } = await render(articulo);
-// El cuerpo solo tiene el comentario «PENDIENTE» hasta migrar el texto en la fase 3
-const tieneTexto = (articulo.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
+// Mientras no se migre el texto, el cuerpo solo tiene el comentario «PENDIENTE»
+const tieneTexto = textoPlano(articulo.body ?? '').length > 0;
 ---
 
-<Pagina
-  titulo={titulo}
-  etiqueta={`${categoria} · ${formatoFecha(fecha)}`}
-  entradilla={resumen}
-  descripcion={resumen}
->
+<Articulo articulo={articulo} relacionados={otros}>
   {tieneTexto ? (
-    <section class="section" style="padding-top:48px">
-      <div class="wrap">
-        <Content />
-      </div>
-    </section>
+    <Content />
   ) : (
-    <EnConstruccion fase="fase 3">Texto del artículo pendiente de migrar desde la web actual.</EnConstruccion>
+    <div class="card pendiente" role="note">
+      <div class="label">Pendiente · migración</div>
+      <p class="body">Texto del artículo pendiente de migrar desde la web actual.</p>
+    </div>
   )}
-</Pagina>
+</Articulo>
