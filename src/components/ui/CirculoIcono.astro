@@ -1,0 +1,17 @@
+---
+import Icono from './Icono.astro';
+import type { NombreIcono } from './iconos';
+
+interface Props {
+  icono: NombreIcono;
+  info?: boolean;
+  pequeno?: boolean;
+  style?: string;
+}
+
+const { icono, info = false, pequeno = false, style } = Astro.props;
+---
+
+<span class:list={['icon-circle', { info, sm: pequeno }]} style={style}>
+  <Icono nombre={icono} />
+</span>

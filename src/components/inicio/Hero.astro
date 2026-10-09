@@ -1,0 +1,83 @@
+---
+import CirculoIcono from '@/components/ui/CirculoIcono.astro';
+import Etiqueta from '@/components/ui/Etiqueta.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { sitio } from '@/config/sitio';
+---
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <Etiqueta>Tecnología · Marketing · Software para empresas</Etiqueta>
+      <h1 class="h1">
+        {sitio.lema}
+        <span class="dot">.</span>
+      </h1>
+      <p class="lead">
+        Desde Betanzos ayudamos a empresas y negocios a mejorar sus procesos, su presencia digital y su
+        gestión. Empieza por una revisión digital gratuita de tu negocio.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-cta" href="#reserva">
+          Reservar mi revisión gratuita <Icono nombre="arrow-r" />
+        </a>
+        <a class="btn btn-out" href="#servicios">
+          Ver servicios
+        </a>
+      </div>
+      <div class="trust">
+        <span>
+          <Icono nombre="check" />
+          Más de 20 años
+        </span>
+        <span>
+          <Icono nombre="check" />
+          Equipo en Betanzos
+        </span>
+        <span>
+          <Icono nombre="check" />
+          Software propio
+        </span>
+      </div>
+    </div>
+    <aside class="offer-card" aria-label="Nuestra propuesta">
+      <div class="bar"></div>
+      <div class="in">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <CirculoIcono icono="search" style="width:52px;height:52px" />
+          <span class="label">Nuestra propuesta</span>
+        </div>
+        <div class="offer-title">
+          Revisión digital gratuita de tu negocio<span class="dot">.</span>
+        </div>
+        <p class="body">
+          Cuéntanos qué te gustaría mejorar. Estudiamos tu caso sin coste y te explicamos qué opciones tienes.
+        </p>
+        <div class="checks">
+          <div>
+            <Icono nombre="check" />
+            Reunión presencial o por videoconferencia
+          </div>
+          <div>
+            <Icono nombre="check" />
+            Aprox. 4 horas de dedicación
+          </div>
+          <div>
+            <Icono nombre="check" />
+            100 % sin compromiso
+          </div>
+        </div>
+        <div class="offer-foot">
+          <div>
+            <div class="label">Próximo hueco libre</div>
+            <!-- Se rellena en el navegador con el primer hueco disponible (ver reserva/reserva.ts) -->
+            <div style="font-size:15px;font-weight:500;margin-top:4px" data-proximo-hueco>
+              Consúltanos
+            </div>
+          </div>
+          <div class="price-big">0 €</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>

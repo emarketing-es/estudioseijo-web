@@ -1,0 +1,25 @@
+---
+import TarjetaArticulo from '@/components/blog/TarjetaArticulo.astro';
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import { articulosPublicados } from '@/lib/blog';
+
+const ultimos = (await articulosPublicados()).slice(0, 3);
+---
+
+{ultimos.length > 0 && (
+  <section class="section">
+    <div class="wrap section-inner" style="gap:36px">
+      <div class="section-head-row">
+        <CabeceraSeccion etiqueta="Noticias y blog" titulo="Ideas para mejorar tu negocio" />
+        <a class="btn btn-out" href="/blog">
+          Ver todas las noticias
+        </a>
+      </div>
+      <div class="grid grid-3">
+        {ultimos.map((articulo) => (
+          <TarjetaArticulo articulo={articulo} nivel="h3" />
+        ))}
+      </div>
+    </div>
+  </section>
+)}

@@ -1,0 +1,66 @@
+---
+import CabeceraSeccion from '@/components/ui/CabeceraSeccion.astro';
+import CirculoIcono from '@/components/ui/CirculoIcono.astro';
+import Icono from '@/components/ui/Icono.astro';
+import { contacto } from '@/config/sitio';
+import { motivos } from '@/data/inicio';
+---
+
+<section class="section" id="nosotros">
+  <div class="wrap section-inner">
+    <CabeceraSeccion
+      etiqueta="Quiénes somos"
+      titulo="Cerca para entender tu negocio. Capacidad técnica para resolverlo"
+    />
+    <div class="why">
+      {motivos.map((m) => (
+        <div class="why-item">
+          <CirculoIcono icono={m.icono} info={m.info} pequeno />
+          <div>
+            <h3 class="h3" style="font-size:17px">
+              {m.titulo}
+            </h3>
+            <p class="body" style="margin-top:6px">
+              {m.texto}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="band">
+      <div class="band-copy">
+        <div class="rule"></div>
+        <div class="band-title">
+          Más de 20 años desarrollando soluciones digitales<span class="dot">.</span>
+        </div>
+        <div class="contacts">
+          <a class="contact" href={contacto.telefono.enlace} data-evento="click_telefono">
+            <span class="badge">
+              <Icono nombre="phone" />
+            </span>
+            <span>
+              <span class="k">Teléfono</span>
+              <br />
+              <span class="v">{contacto.telefono.visible}</span>
+            </span>
+          </a>
+          <a class="contact" href={contacto.whatsapp.enlace} data-evento="click_whatsapp">
+            <span class="badge">
+              <Icono nombre="chat" />
+            </span>
+            <span>
+              <span class="k">WhatsApp</span>
+              <br />
+              <span class="v">{contacto.whatsapp.visible}</span>
+            </span>
+          </a>
+        </div>
+      </div>
+      <div class="band-art" aria-hidden="true">
+        <span class="ring"></span>
+        <span class="disc"></span>
+        <span class="pip"></span>
+      </div>
+    </div>
+  </div>
+</section>

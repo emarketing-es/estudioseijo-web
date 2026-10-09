@@ -1,0 +1,28 @@
+---
+/**
+ * Botón a la ficha de Google (reseñas o perfil). Si el enlace aún no se ha recibido (PENDIENTE en
+ * src/config/sitio.ts) se muestra desactivado, en lugar de un enlace vacío.
+ */
+import Icono from './Icono.astro';
+
+interface Props {
+  href: string | null;
+  clase: string;
+  flecha?: boolean;
+  style?: string;
+}
+
+const { href, clase, flecha = false, style } = Astro.props;
+---
+
+{href ? (
+  <a class:list={['btn', clase]} href={href} target="_blank" rel="noopener" style={style}>
+    <slot />
+    {flecha && <Icono nombre="arrow-r" />}
+  </a>
+) : (
+  <span class:list={['btn', clase]} aria-disabled="true" title="Enlace pendiente" style={style}>
+    <slot />
+    <span class="sr-only"> (enlace pendiente)</span>
+  </span>
+)}
