@@ -1,16 +1,65 @@
 ---
-import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+/**
+ * Confirmación tras crear la reunión en Google Calendar. El resumen llega en la URL (fecha, hora y modalidad,
+ * sin datos personales) y se pinta en el navegador.
+ */
+import Icono from '@/components/ui/Icono.astro';
+import { contacto } from '@/config/sitio';
 import Pagina from '@/layouts/Pagina.astro';
 ---
 
 <Pagina
   titulo="Reserva confirmada"
   etiqueta="Revisión digital gratuita"
+  entradilla="Te hemos enviado la invitación de Google Calendar y un correo con los detalles de la reunión."
   descripcion="Tu reunión con Estudio Seijo está reservada."
   calida
   noindex
 >
-  <EnConstruccion fase="fase 4">
-    Resumen de la reserva y evento de analítica «reserva_confirmada».
-  </EnConstruccion>
+  <section class="section" style="padding-top:48px">
+    <div class="wrap">
+      <div class="panel done" style="max-width:760px;margin-inline:auto">
+        <div class="done-icon">
+          <Icono nombre="check" />
+        </div>
+        <h2 class="done-title">Tu reunión está reservada</h2>
+        <p style="font-size:18px;color:var(--g800)" id="confirmada-resumen">
+          Revisa tu correo: ahí tienes la fecha, la hora y el enlace o la dirección de la reunión.
+        </p>
+        <p class="body" style="max-width:560px">
+          Si necesitas cambiar la fecha, responde al correo, llámanos al{' '}
+          <a href={contacto.telefono.enlace} data-evento="click_telefono">
+            {contacto.telefono.visible}
+          </a>{' '}
+          o escríbenos por WhatsApp al{' '}
+          <a href={contacto.whatsapp.enlace} data-evento="click_whatsapp">
+            {contacto.whatsapp.visible}
+          </a>
+          .
+        </p>
+        <a class="btn btn-out btn-sm" href="/">
+          Volver al inicio
+        </a>
+      </div>
+    </div>
+  </section>
 </Pagina>
+
+<script>
+  import { modalidades } from '@/config/reservas';
+  import { registrarEvento } from '@/lib/analitica';
+  import { resumenSeleccion } from '@/lib/reservas/solicitud';
+
+  const p = new URLSearchParams(window.location.search);
+  const fecha = p.get('fecha') ?? '';
+  const hora = p.get('hora') ?? '';
+  const modalidad = p.get('modalidad') ?? '';
+  const valida =
+    /^\d{4}-\d{2}-\d{2}$/.test(fecha) &&
+    /^\d{2}:\d{2}$/.test(hora) &&
+    (modalidades as readonly string[]).includes(modalidad);
+  if (valida) {
+    document.getElementById('confirmada-resumen')!.textContent = resumenSeleccion(fecha, hora, modalidad);
+    registrarEvento('reserva_confirmada', { modalidad });
+  }
+</script>

@@ -14,7 +14,7 @@ Sitio web de Estudio Seijo (Betanzos). Construido con **Astro + TypeScript** a p
 | 1 · Arranque                     | ✅ Terminada                           |
 | 2 · Maquetación                  | ✅ Terminada                           |
 | 3 · Blog y CMS                   | ✅ Terminada (falta migrar los textos) |
-| 4 · Reservas con Google Calendar | Pendiente                              |
+| 4 · Reservas con Google Calendar | ✅ Terminada (faltan credenciales)     |
 | 5 · Formularios, RGPD y legal    | Pendiente                              |
 | 6 · SEO y analítica              | Pendiente                              |
 | 7 · QA y publicación             | Pendiente                              |
@@ -99,8 +99,9 @@ sustituyen por datos de ejemplo.
 
 ## Decisiones técnicas
 
-- **Astro en modo estático.** Todas las páginas se generan como HTML: carga muy rápida y hosting barato. Las
-  funciones de servidor (reservas y formularios) se añadirán en la fase 4 con el adaptador del hosting elegido.
+- **Astro con páginas estáticas y dos funciones de servidor.** Todas las páginas se generan como HTML (carga muy
+  rápida); solo `/api/disponibilidad` y `/api/reservas` se ejecutan en el servidor. Adaptador de Node
+  (`@astrojs/node`) mientras se decide el hosting: en Netlify o Cloudflare se cambia una línea de `astro.config.mjs`.
 - **Tipografías servidas desde nuestro dominio** (`@fontsource`). DM Sans en versión variable con eje de tamaño
   óptico, igual que la maqueta con Google Fonts, pero sin enviar la IP del visitante a Google antes del
   consentimiento y sin depender de un servidor externo.
@@ -113,18 +114,78 @@ sustituyen por datos de ejemplo.
 - **Decap CMS servido desde nuestro dominio** (`scripts/copiar-decap.mjs` lo copia de `node_modules` antes de cada
   `dev`/`build`), sin depender de un CDN externo. Versión fijada en `package.json`.
 
-## Reserva (estado provisional hasta la fase 4)
+## Reservas con Google Calendar
 
-El calendario muestra huecos calculados con las reglas de `src/config/reservas.ts` (los de la maqueta) y, al
-confirmar, prepara la solicitud para enviarla por WhatsApp o email desde el dispositivo del visitante, como en la
-maqueta. Aún **no** consulta ni crea eventos en Google Calendar.
+### Cómo funciona
 
-La interfaz pide los huecos a un «proveedor» (`src/lib/reservas/proveedor.ts`): en la fase 4 se cambia el
-proveedor provisional por uno que llama a `/api/disponibilidad`, sin tocar la interfaz. Si se define
-`PUBLIC_GOOGLE_BOOKING_URL`, la sección muestra la agenda de citas de Google en lugar del calendario propio (plan B).
+1. El calendario de la web pide los huecos a `GET /api/disponibilidad`. El servidor consulta la ocupación del
+   calendario de Google (`freeBusy`) y calcula los huecos libres con las reglas de `src/config/reservas.ts`
+   (días laborables, franjas, 60 min, margen entre citas, 24 h de antelación, 60 días vista y festivos de
+   `config/festivos.json`), siempre en hora de Madrid y teniendo en cuenta los cambios de hora.
+2. Al confirmar, `POST /api/reservas` valida los datos (zod), comprueba el anti-spam (Cloudflare Turnstile, campo
+   trampa y límite por IP), **vuelve a comprobar** que el hueco sigue libre y crea el evento en Google Calendar con
+   el cliente como invitado: con Google Meet si es videoconferencia o con la dirección si es presencial. Google
+   envía la invitación; además se envían el correo de confirmación al cliente y el aviso interno.
+3. El visitante pasa a `/reserva/confirmada` con el resumen (evento GA4 `reserva_confirmada`).
+
+**Sin credenciales de Google** la web no se rompe: el calendario usa las mismas reglas sin consultar Google y,
+al confirmar, prepara la solicitud para enviarla por WhatsApp o email (como en la maqueta). Si se define
+`PUBLIC_GOOGLE_BOOKING_URL`, se muestra en su lugar la agenda de citas de Google (plan B).
 
 El calendario se maneja con teclado: flechas para moverse entre días disponibles, Inicio/Fin para el primer y
 último día libre de la semana y Re Pág/Av Pág para cambiar de mes.
+
+### Conectar Google Calendar
+
+Hay dos opciones según el tipo de cuenta de Google de Estudio Seijo (**PENDIENTE**: confirmar cuál es).
+
+**Opción A · Google Workspace (recomendada): cuenta de servicio con delegación de dominio**
+
+1. En [Google Cloud Console](https://console.cloud.google.com/) crea un proyecto (p. ej. «estudioseijo-web») y
+   activa la **Google Calendar API** (APIs y servicios → Biblioteca).
+2. APIs y servicios → Credenciales → Crear credenciales → **Cuenta de servicio**. Ábrela → Claves → Añadir clave
+   → JSON. Del archivo descargado salen `client_email` y `private_key`. Copia también el **ID de cliente** numérico.
+3. En la [consola de administración de Workspace](https://admin.google.com/): Seguridad → Acceso y control de datos
+   → Controles de API → **Delegación de todo el dominio** → Añadir: el ID de cliente y el ámbito
+   `https://www.googleapis.com/auth/calendar`.
+4. Variables de entorno:
+   - `GOOGLE_SERVICE_ACCOUNT_EMAIL` = `client_email`
+   - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` = `private_key` (en una línea, con los saltos escritos como `\n`)
+   - `GOOGLE_IMPERSONATE_USER` = la cuenta en cuyo nombre se crean las reuniones (p. ej. `info@estudioseijo.com`)
+   - `GOOGLE_CALENDAR_ID` = el calendario (normalmente la misma dirección)
+
+**Opción B · Gmail personal: OAuth con refresh token**
+
+1. Mismo paso 1 que en la opción A.
+2. APIs y servicios → Pantalla de consentimiento de OAuth: tipo «Externo», añade como usuario de prueba la cuenta
+   del calendario y **publica la aplicación** (en modo prueba los tokens caducan a los 7 días).
+3. Credenciales → Crear credenciales → **ID de cliente de OAuth** → tipo «Aplicación web», con
+   `https://developers.google.com/oauthplayground` como URI de redirección autorizada.
+4. En [OAuth Playground](https://developers.google.com/oauthplayground): ⚙️ → «Use your own OAuth credentials» (pega
+   ID y secreto) → ámbito `https://www.googleapis.com/auth/calendar` → Authorize APIs (con la cuenta del
+   calendario) → «Exchange authorization code for tokens» → copia el **refresh token**.
+5. Variables de entorno: `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` y
+   `GOOGLE_CALENDAR_ID` (la dirección de Gmail o el ID del calendario).
+
+Si están las dos, se usa la cuenta de servicio. Las credenciales son secretos: van en `.env` (local) o en el panel
+del hosting, **nunca** en el repositorio.
+
+### Correo y anti-spam
+
+- **Correo:** `MAIL_FROM` + `RESEND_API_KEY` (Resend) o `MAIL_FROM` + `SMTP_*`. Sin ellos, los correos no se
+  envían (en desarrollo se muestran en la consola); Google sigue enviando la invitación del evento.
+  `MAIL_AVISOS` recibe el aviso interno (por defecto, info@estudioseijo.com).
+- **Turnstile:** crea un widget en el panel de Cloudflare (Turnstile) para el dominio y rellena
+  `PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`. Muy recomendable en producción: cada reserva envía una
+  invitación desde vuestro calendario.
+
+### Pruebas de las reservas
+
+- Tests unitarios del cálculo de huecos (festivos, fines de semana, solapes, margen, antelación y cambios de hora
+  de octubre y marzo), del cliente de Google y de las funciones de servidor.
+- Tests e2e del flujo completo contra un **Google simulado** (`tests/e2e/google-simulado.mjs`): huecos reales,
+  reserva con Meet, presencial, hueco ocupado entre medias y validación en servidor. También en la integración
+  continua; nunca se llama a Google de verdad.
 
 ## Cómo publicar en el blog
 
@@ -187,8 +248,8 @@ secretos.
 
 ## Pendiente de documentar en sus fases
 
-- **Configuración de Google Calendar** (cuenta de servicio o OAuth): fase 4.
-- **Despliegue** (depende del hosting, pendiente de confirmar): fases 4 y 7.
+- **Despliegue** (depende del hosting, pendiente de confirmar): fase 7. Con el adaptador actual, `pnpm build` genera
+  `dist/client` (estático) y `dist/server/entry.mjs` (se ejecuta con `node dist/server/entry.mjs`, puerto en `PORT`).
 
 ## Forma de trabajo
 
