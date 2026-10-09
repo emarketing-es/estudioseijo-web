@@ -1,0 +1,15 @@
+---
+/**
+ * Artículo del blog. En la fase 3 las rutas saldrán de la colección de contenido `blog`
+ * (Markdown + Decap CMS). Mientras tanto no se genera ninguna.
+ */
+import type { GetStaticPaths } from 'astro';
+import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import Pagina from '@/layouts/Pagina.astro';
+
+export const getStaticPaths = (() => []) satisfies GetStaticPaths;
+---
+
+<Pagina titulo="Artículo" etiqueta="Noticias y blog">
+  <EnConstruccion fase="fase 3" />
+</Pagina>

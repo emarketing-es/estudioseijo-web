@@ -1,0 +1,22 @@
+---
+import Pagina from '@/layouts/Pagina.astro';
+---
+
+<Pagina
+  titulo="Página no encontrada"
+  etiqueta="Error 404"
+  entradilla="La página que buscas no existe o ha cambiado de dirección."
+  descripcion="La página que buscas no existe o ha cambiado de dirección."
+  noindex
+>
+  <section class="section" style="padding-top:48px">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;gap:12px">
+      <a class="btn btn-cta" href="/">
+        Ir al inicio
+      </a>
+      <a class="btn btn-out" href="/blog">
+        Ver el blog
+      </a>
+    </div>
+  </section>
+</Pagina>

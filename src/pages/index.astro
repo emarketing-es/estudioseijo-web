@@ -1,0 +1,17 @@
+---
+import EnConstruccion from '@/components/ui/EnConstruccion.astro';
+import Pagina from '@/layouts/Pagina.astro';
+import { sitio } from '@/config/sitio';
+---
+
+<Pagina
+  titulo={sitio.lema}
+  portada
+  etiqueta="Tecnología · Marketing · Software para empresas"
+  entradilla="Desde Betanzos ayudamos a empresas y negocios a mejorar sus procesos, su presencia digital y su gestión. Empieza por una revisión digital gratuita de tu negocio."
+>
+  <EnConstruccion fase="fase 2">
+    Aquí irán, en el orden de la maqueta: oferta, «¿Te pasa alguna de estas cosas?», pasos, reserva,
+    servicios, software propio, nosotros, opiniones, últimas noticias y banda final.
+  </EnConstruccion>
+</Pagina>
