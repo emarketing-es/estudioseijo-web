@@ -15,7 +15,7 @@ Sitio web de Estudio Seijo (Betanzos). Construido con **Astro + TypeScript** a p
 | 2 · Maquetación                  | ✅ Terminada                           |
 | 3 · Blog y CMS                   | ✅ Terminada (falta migrar los textos) |
 | 4 · Reservas con Google Calendar | ✅ Terminada (faltan credenciales)     |
-| 5 · Formularios, RGPD y legal    | Pendiente                              |
+| 5 · Formularios, RGPD y legal    | ✅ Terminada (faltan textos legales)   |
 | 6 · SEO y analítica              | Pendiente                              |
 | 7 · QA y publicación             | Pendiente                              |
 
@@ -186,6 +186,19 @@ del hosting, **nunca** en el repositorio.
 - Tests e2e del flujo completo contra un **Google simulado** (`tests/e2e/google-simulado.mjs`): huecos reales,
   reserva con Meet, presencial, hueco ocupado entre medias y validación en servidor. También en la integración
   continua; nunca se llama a Google de verdad.
+
+## RGPD, cookies y textos legales
+
+- **Formulario de reserva:** casilla de consentimiento sin marcar, enlace a la política de privacidad y primera capa
+  de información visible (responsable, finalidad, legitimación, destinatarios y derechos). **PENDIENTE:** revisión
+  por la asesoría.
+- **Cookies:** sin `PUBLIC_GA4_ID`, la web no usa cookies no esenciales y no muestra aviso (las tipografías y el CMS
+  se sirven desde nuestro dominio). Con GA4 configurado, aparece un aviso con «Aceptar analítica» y «Rechazar» al
+  mismo nivel; GA4 no se descarga ni guarda cookies hasta que se acepta (**Google Consent Mode v2**, todo denegado
+  por defecto). La elección se guarda en `es-consentimiento` y se puede cambiar desde la página de cookies.
+- **Textos legales:** `src/content/legal/*.md` (aviso legal, privacidad y cookies), editables también desde `/admin`.
+  Son **plantillas marcadas como pendientes** hasta recibir los textos vigentes con titular, NIF y domicilio: al
+  pegarlos, pon `pendiente: false` y desaparece el aviso.
 
 ## Cómo publicar en el blog
 

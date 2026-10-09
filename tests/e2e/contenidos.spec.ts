@@ -66,3 +66,35 @@ test('opiniones: sin reseñas reales, solo huecos «Pendiente» y enlaces de Goo
   await expect(botonesGoogle).toHaveCount(2);
   await expect(botonesGoogle.first()).toContainText('enlace pendiente');
 });
+
+test('las páginas legales muestran la plantilla marcada como pendiente', async ({ page }) => {
+  await page.goto('/aviso-legal');
+  await expect(page.getByText('Plantilla provisional.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Datos identificativos' })).toBeVisible();
+  await page.goto('/cookies');
+  await expect(page.getByText('esta web no usa cookies de analítica')).toBeVisible();
+});
+
+test('RGPD: el formulario de reserva informa antes de consentir y la casilla no viene marcada', async ({
+  page,
+}) => {
+  await page.goto('/#reserva');
+  const casilla = page.getByLabel(/Acepto la política de privacidad/);
+  await expect(casilla).not.toBeChecked();
+  await expect(casilla).toHaveAttribute('aria-describedby', 'info-privacidad');
+  const info = page.locator('#info-privacidad');
+  await expect(info).toContainText('Responsable: Estudio Seijo');
+  await expect(info).toContainText('Finalidad');
+  await expect(info.getByRole('link', { name: 'política de privacidad' })).toHaveAttribute(
+    'href',
+    '/privacidad',
+  );
+});
+
+test('sin GA4 configurado no hay aviso de cookies ni peticiones a Google', async ({ page }) => {
+  const google: string[] = [];
+  page.on('request', (r) => /google-analytics|googletagmanager/.test(r.url()) && google.push(r.url()));
+  await page.goto('/');
+  await expect(page.locator('#aviso-cookies')).toHaveCount(0);
+  expect(google).toEqual([]);
+});
