@@ -4,6 +4,7 @@ import ListadoBlog from '@/components/blog/ListadoBlog.astro';
 import Pagina from '@/layouts/Pagina.astro';
 import { categorias, type Categoria } from '@/config/blog';
 import { articulosPublicados } from '@/lib/blog';
+import { esquemaMigas } from '@/lib/seo';
 
 export const getStaticPaths = (() =>
   categorias.map((categoria) => ({
@@ -25,6 +26,13 @@ const articulos = (await articulosPublicados()).filter((a) => a.data.categoria =
   etiqueta="Noticias y blog"
   entradilla="Web, captación, datos, normativa, automatización y software de gestión, explicados de forma práctica y sin tecnicismos."
   descripcion={`Artículos de ${categoria.nombre.toLowerCase()} para pymes, explicados de forma práctica.`}
+  imagen={`/img/og/blog-${categoria.slug}.png`}
+  esquemas={[
+    esquemaMigas([
+      { nombre: 'Blog', ruta: '/blog' },
+      { nombre: categoria.nombre, ruta: `/blog/categoria/${categoria.slug}` },
+    ]),
+  ]}
 >
   <ListadoBlog articulos={articulos} activa={categoria} />
 </Pagina>

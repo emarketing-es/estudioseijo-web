@@ -16,7 +16,7 @@ Sitio web de Estudio Seijo (Betanzos). Construido con **Astro + TypeScript** a p
 | 3 · Blog y CMS                   | ✅ Terminada (falta migrar los textos) |
 | 4 · Reservas con Google Calendar | ✅ Terminada (faltan credenciales)     |
 | 5 · Formularios, RGPD y legal    | ✅ Terminada (faltan textos legales)   |
-| 6 · SEO y analítica              | Pendiente                              |
+| 6 · SEO y analítica              | ✅ Terminada (falta ID de GA4)         |
 | 7 · QA y publicación             | Pendiente                              |
 
 ## Requisitos
@@ -199,6 +199,18 @@ del hosting, **nunca** en el repositorio.
 - **Textos legales:** `src/content/legal/*.md` (aviso legal, privacidad y cookies), editables también desde `/admin`.
   Son **plantillas marcadas como pendientes** hasta recibir los textos vigentes con titular, NIF y domicilio: al
   pegarlos, pon `pendiente: false` y desaparece el aviso.
+
+## SEO y analítica
+
+- **Metadatos por página:** título, descripción, canonical (con barra final, igual que el sitemap), Open Graph y
+  tarjeta de Twitter con imagen 1200×630. Las imágenes sociales están en `public/img/og/` y se regeneran con
+  `node scripts/generar-og.mjs` (una general y una por categoría del blog).
+- **Datos estructurados (JSON-LD, `src/lib/seo.ts`):** `ProfessionalService` y `WebSite` en la portada,
+  `BlogPosting` + `BreadcrumbList` en cada artículo y `BreadcrumbList` en las categorías.
+- **`sitemap-index.xml`** (`@astrojs/sitemap`) sin la confirmación de reserva, el CMS ni los borradores, y
+  **`robots.txt`** con el sitemap. Tras publicar: dar de alta el dominio en Search Console y enviar el sitemap.
+- **GA4** (`PUBLIC_GA4_ID`, con consentimiento): eventos `reserva_iniciada`, `reserva_confirmada`, `click_whatsapp`
+  y `click_telefono`.
 
 ## Cómo publicar en el blog
 

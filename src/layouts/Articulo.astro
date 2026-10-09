@@ -7,7 +7,8 @@ import TarjetaArticulo from '@/components/blog/TarjetaArticulo.astro';
 import Etiqueta from '@/components/ui/Etiqueta.astro';
 import Icono from '@/components/ui/Icono.astro';
 import { categoriaPorNombre, formatoFecha } from '@/config/blog';
-import { minutosLectura, type Articulo } from '@/lib/blog';
+import { minutosLectura, urlArticulo, type Articulo } from '@/lib/blog';
+import { esquemaArticulo, esquemaMigas } from '@/lib/seo';
 import Base from './Base.astro';
 
 interface Props {
@@ -20,9 +21,34 @@ const { titulo, resumen, fecha, categoria, autor, imagen, imagenAlt } = articulo
 const cat = categoriaPorNombre(categoria)!;
 const minutos = minutosLectura(articulo);
 const fechaISO = fecha.toISOString().slice(0, 10);
+const imagenSocial = imagen ?? `/img/og/blog-${cat.slug}.png`;
+const esquemas = [
+  esquemaArticulo({
+    titulo,
+    resumen,
+    ruta: urlArticulo(articulo),
+    fecha,
+    autor,
+    categoria,
+    imagen: imagenSocial,
+  }),
+  esquemaMigas([
+    { nombre: 'Blog', ruta: '/blog' },
+    { nombre: categoria, ruta: `/blog/categoria/${cat.slug}` },
+    { nombre: titulo, ruta: urlArticulo(articulo) },
+  ]),
+];
 ---
 
-<Base titulo={titulo} descripcion={resumen}>
+<Base
+  titulo={titulo}
+  descripcion={resumen}
+  tipo="article"
+  publicado={fecha}
+  imagen={imagenSocial}
+  imagenAlt={imagen ? imagenAlt : `${categoria} · ${titulo}`}
+  esquemas={esquemas}
+>
   <article>
     <header class="page-hero">
       <div class="wrap">
